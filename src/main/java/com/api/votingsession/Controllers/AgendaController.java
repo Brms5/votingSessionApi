@@ -27,7 +27,6 @@ public class AgendaController {
 
     @PostMapping
     public ResponseEntity<Agenda> CreateNewAgenda(@RequestBody @Valid AgendaDto agendaDto){
-
         return ResponseEntity.status(HttpStatus.CREATED).body(agendaService.CreateNewAgenda(agendaDto));
     }
 
@@ -39,5 +38,15 @@ public class AgendaController {
     @GetMapping("/{id}")
     public ResponseEntity<Object> GetAgendaById(@PathVariable(value = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(agendaService.GetAgendaById(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> RemoveAgendaById(@PathVariable(value = "id") UUID id){
+        return ResponseEntity.status(HttpStatus.OK).body(agendaService.RemoveAgendaById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> UpdateAgendaById(@PathVariable(value = "id") UUID id, @RequestBody @Valid AgendaDto agendaDto){
+        return ResponseEntity.status(HttpStatus.OK).body(agendaService.UpdateAgendaById(agendaDto, id));
     }
 }
