@@ -30,4 +30,14 @@ public class AgendaController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(agendaService.CreateNewAgenda(agendaDto));
     }
+
+    @GetMapping
+    public ResponseEntity<Page<Agenda>> GetAllAgenda(@PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable ){
+        return ResponseEntity.status(HttpStatus.OK).body(agendaService.GetAllAgenda(pageable));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> GetAgendaById(@PathVariable(value = "id") UUID id){
+        return ResponseEntity.status(HttpStatus.OK).body(agendaService.GetAgendaById(id));
+    }
 }

@@ -42,4 +42,19 @@ public class AgendaService {
         return agendaRepository.save(agenda);
     }
 
+    public Page<Agenda> GetAllAgenda(Pageable pageable){
+        return agendaRepository.findAll(pageable);
+    }
+
+    public ResponseEntity<Object> GetAgendaById(UUID id){
+
+        Optional<Agenda> agendaOptional = agendaRepository.findById(id);
+
+        if(!agendaOptional.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agenda not found!");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(agendaOptional.get());
+    }
+
 }
