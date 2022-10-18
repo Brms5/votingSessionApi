@@ -30,5 +30,4 @@ public class AgendaController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(agendaService.CreateNewAgenda(agendaDto));
     }
-
 }

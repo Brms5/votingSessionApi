@@ -4,10 +4,11 @@ import com.api.votingsession.Domain.Enums.AgendaTopic;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "TB_AGENDA")
+@Table(name = "TB_AGENDA", uniqueConstraints = {@UniqueConstraint(columnNames = "id") })
 public class Agenda implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -20,6 +21,11 @@ public class Agenda implements Serializable {
     private String title;
     @Column(nullable = false, unique = true, length = 999)
     private String description;
+    @OneToOne(targetEntity = VotingSession.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "votingSession_id", referencedColumnName = "id")
+    private VotingSession votingSession;
+    @Column(nullable = false)
+    private LocalDateTime registrationDate;
 
     public UUID getId() {
         return id;
@@ -51,5 +57,21 @@ public class Agenda implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public VotingSession getVotingSession() {
+        return votingSession;
+    }
+
+    public void setVotingSession(VotingSession votingSession) {
+        this.votingSession = votingSession;
+    }
+
+    public LocalDateTime getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(LocalDateTime registrationDate) {
+        this.registrationDate = registrationDate;
     }
 }

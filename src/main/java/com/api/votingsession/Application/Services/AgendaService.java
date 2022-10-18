@@ -2,6 +2,7 @@ package com.api.votingsession.Application.Services;
 
 import com.api.votingsession.Domain.Dtos.AgendaDto;
 import com.api.votingsession.Domain.Models.Agenda;
+import com.api.votingsession.Domain.Models.VotingSession;
 import com.api.votingsession.Infrastructure.Repositories.AgendaRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,10 +32,12 @@ public class AgendaService {
     @Transactional
     public Agenda CreateNewAgenda(AgendaDto agendaDto){
 
-
-
         var agenda = new Agenda();
         BeanUtils.copyProperties(agendaDto, agenda);
+        agenda.setRegistrationDate(LocalDateTime.now(ZoneId.of("UTC")));
+
+        var votingSession = new VotingSession();
+        agenda.setVotingSession(votingSession);
 
         return agendaRepository.save(agenda);
     }
