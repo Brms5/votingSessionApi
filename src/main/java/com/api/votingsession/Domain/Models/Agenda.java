@@ -21,9 +21,9 @@ public class Agenda implements Serializable {
     private String title;
     @Column(nullable = false, unique = true, length = 999)
     private String description;
-    @OneToOne(targetEntity = VotingSession.class, cascade = CascadeType.ALL)
-    @JoinColumn(name = "votingSession_id", referencedColumnName = "id")
-    private VotingSession votingSession;
+    @OneToOne(targetEntity = AgendaSession.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "agendaSession_id", referencedColumnName = "id")
+    private AgendaSession agendaSession;
     @Column(nullable = false)
     private LocalDateTime registrationDate;
 
@@ -59,12 +59,12 @@ public class Agenda implements Serializable {
         this.description = description;
     }
 
-    public VotingSession getVotingSession() {
-        return votingSession;
+    public AgendaSession getAgendaSession() {
+        return agendaSession;
     }
 
-    public void setVotingSession(VotingSession votingSession) {
-        this.votingSession = votingSession;
+    public void setAgendaSession(AgendaSession agendaSession) {
+        this.agendaSession = agendaSession;
     }
 
     public LocalDateTime getRegistrationDate() {

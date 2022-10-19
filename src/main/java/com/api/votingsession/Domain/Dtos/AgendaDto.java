@@ -1,7 +1,7 @@
 package com.api.votingsession.Domain.Dtos;
 
 import com.api.votingsession.Domain.Enums.AgendaTopic;
-import com.api.votingsession.Domain.Models.VotingSession;
+import com.api.votingsession.Domain.Models.AgendaSession;
 
 import javax.validation.constraints.NotBlank;
 
@@ -13,7 +13,7 @@ public class AgendaDto {
     private String title;
     @NotBlank
     private String description;
-    private VotingSession votingSession;
+    private AgendaSession agendaSession;
 
     public AgendaTopic getTopic() {
         return topic;
@@ -39,9 +39,9 @@ public class AgendaDto {
         this.description = description;
     }
 
-    public VotingSession getVotingSession() { return votingSession; }
+    public AgendaSession getVotingSession() { return agendaSession; }
 
-    public void setVotingSession(VotingSession votingSession) {
-        this.votingSession = votingSession;
+    public void setVotingSession(AgendaSession agendaSession) {
+        this.agendaSession = agendaSession;
     }
 }
