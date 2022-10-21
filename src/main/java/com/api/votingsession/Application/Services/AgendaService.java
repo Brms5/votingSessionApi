@@ -77,7 +77,9 @@ public class AgendaService {
         var agenda = new Agenda();
         BeanUtils.copyProperties(agendaCreateDto, agenda);
         agenda.setId(agendaOptional.get().getId());
+        agenda.setVotes(agendaOptional.get().getVotes());
         agenda.setRegistrationDate(agendaOptional.get().getRegistrationDate());
+        agenda.setVotingClosedDate(agendaOptional.get().getVotingClosedDate());
 
         return ResponseEntity.status(HttpStatus.OK).body(agendaRepository.save(agenda));
     }
