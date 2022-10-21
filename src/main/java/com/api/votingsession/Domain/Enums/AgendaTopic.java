@@ -30,6 +30,6 @@ public enum AgendaTopic {
                 return value;
             }
         }
-        throw new IllegalArgumentException("Invalid AgendaTopic code");
+        throw new IllegalArgumentException("Invalid AgendaTopic code!");
     }
 }

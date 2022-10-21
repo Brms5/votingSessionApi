@@ -5,6 +5,7 @@ import com.api.votingsession.Domain.Enums.AgendaTopic;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -21,11 +22,13 @@ public class Agenda implements Serializable {
     private String title;
     @Column(nullable = false, unique = true, length = 999)
     private String description;
-    @OneToOne(targetEntity = AgendaSession.class, cascade = CascadeType.ALL)
-    @JoinColumn(name = "agendaSession_id", referencedColumnName = "id")
-    private AgendaSession agendaSession;
+    @OneToMany
+    @Column()
+    private List<Vote> votes;
     @Column(nullable = false)
     private LocalDateTime registrationDate;
+    @Column(nullable = false)
+    private LocalDateTime votingClosedDate;
 
     public UUID getId() {
         return id;
@@ -39,8 +42,8 @@ public class Agenda implements Serializable {
         return AgendaTopic.valueOf(topic);
     }
 
-    public void setTopic(AgendaTopic topic) {
-        this.topic = topic.getCode();
+    public void setTopic(AgendaTopic agendaTopic) {
+        this.topic = agendaTopic.getCode();
     }
 
     public String getTitle() {
@@ -59,12 +62,12 @@ public class Agenda implements Serializable {
         this.description = description;
     }
 
-    public AgendaSession getAgendaSession() {
-        return agendaSession;
+    public List<Vote> getVotes() {
+        return votes;
     }
 
-    public void setAgendaSession(AgendaSession agendaSession) {
-        this.agendaSession = agendaSession;
+    public void setVotes(List<Vote> votes) {
+        this.votes = votes;
     }
 
     public LocalDateTime getRegistrationDate() {
@@ -73,5 +76,13 @@ public class Agenda implements Serializable {
 
     public void setRegistrationDate(LocalDateTime registrationDate) {
         this.registrationDate = registrationDate;
+    }
+
+    public LocalDateTime getVotingClosedDate() {
+        return votingClosedDate;
+    }
+
+    public void setVotingClosedDate(LocalDateTime votingClosedDate) {
+        this.votingClosedDate = votingClosedDate;
     }
 }

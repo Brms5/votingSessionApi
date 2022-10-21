@@ -1,26 +1,25 @@
 package com.api.votingsession.Domain.Dtos;
 
 import com.api.votingsession.Domain.Enums.AgendaTopic;
-import com.api.votingsession.Domain.Models.AgendaSession;
 
 import javax.validation.constraints.NotBlank;
 
-public class AgendaDto {
+public class AgendaCreateDto {
 
 //    @NotBlank
-    private AgendaTopic topic;
+    private Integer topic;
     @NotBlank
     private String title;
     @NotBlank
     private String description;
-    private AgendaSession agendaSession;
+    private VoteDto votes;
 
     public AgendaTopic getTopic() {
-        return topic;
+        return AgendaTopic.valueOf(topic);
     }
 
-    public void setTopic(AgendaTopic topic) {
-        this.topic = topic;
+    public void setTopic(AgendaTopic agendaTopic) {
+        this.topic = agendaTopic.getCode();
     }
 
     public String getTitle() {
@@ -39,9 +38,11 @@ public class AgendaDto {
         this.description = description;
     }
 
-    public AgendaSession getVotingSession() { return agendaSession; }
+    public VoteDto getVotes() {
+        return votes;
+    }
 
-    public void setVotingSession(AgendaSession agendaSession) {
-        this.agendaSession = agendaSession;
+    public void setVotes(VoteDto votes) {
+        this.votes = votes;
     }
 }

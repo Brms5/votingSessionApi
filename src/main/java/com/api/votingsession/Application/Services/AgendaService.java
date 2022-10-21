@@ -1,10 +1,8 @@
 package com.api.votingsession.Application.Services;
 
-import com.api.votingsession.Domain.Dtos.AgendaDto;
+import com.api.votingsession.Domain.Dtos.AgendaCreateDto;
 import com.api.votingsession.Domain.Models.Agenda;
-import com.api.votingsession.Domain.Models.AgendaSession;
 import com.api.votingsession.Infrastructure.Repositories.AgendaRepository;
-import com.api.votingsession.Infrastructure.Repositories.AgendaSessionRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,22 +20,19 @@ import java.util.UUID;
 public class AgendaService {
 
     final AgendaRepository agendaRepository;
-    final AgendaSessionRepository agendaSessionRepository;
 
-    public AgendaService(AgendaRepository agendaRepository, AgendaSessionRepository agendaSessionRepository) {
+    public AgendaService(AgendaRepository agendaRepository){
         this.agendaRepository = agendaRepository;
-        this.agendaSessionRepository = agendaSessionRepository;
     }
 
     @Transactional
-    public Agenda CreateNewAgenda(AgendaDto agendaDto){
+    public Agenda CreateNewAgenda(AgendaCreateDto agendaCreateDto){
 
         var agenda = new Agenda();
-        BeanUtils.copyProperties(agendaDto, agenda);
+        BeanUtils.copyProperties(agendaCreateDto, agenda);
+        agenda.setVotes(null);
         agenda.setRegistrationDate(LocalDateTime.now(ZoneId.of("UTC")));
-
-        var agendaSession = new AgendaSession();
-        agenda.setAgendaSession(agendaSession);
+        agenda.setVotingClosedDate(LocalDateTime.now(ZoneId.of("UTC")).plusMinutes(1));
 
         return agendaRepository.save(agenda);
     }
@@ -61,20 +56,18 @@ public class AgendaService {
     public ResponseEntity<Object> RemoveAgendaById(UUID id){
 
         Optional<Agenda> agendaOptional = agendaRepository.findById(id);
-        var newAgendaSession = agendaOptional.get().getAgendaSession();
 
         if(agendaOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agenda not found!");
         }
 
-        agendaSessionRepository.delete(newAgendaSession);
         agendaRepository.delete(agendaOptional.get());
 
         return ResponseEntity.status(HttpStatus.OK).body("Agenda deleted successfully!");
     }
 
     @Transactional
-    public ResponseEntity UpdateAgendaById(AgendaDto agendaDto, UUID id){
+    public ResponseEntity<Object> UpdateAgendaById(AgendaCreateDto agendaCreateDto, UUID id){
         Optional<Agenda> agendaOptional = agendaRepository.findById(id);
 
         if (agendaOptional.isEmpty()) {
@@ -82,10 +75,9 @@ public class AgendaService {
         }
 
         var agenda = new Agenda();
-        BeanUtils.copyProperties(agendaDto, agenda);
+        BeanUtils.copyProperties(agendaCreateDto, agenda);
         agenda.setId(agendaOptional.get().getId());
         agenda.setRegistrationDate(agendaOptional.get().getRegistrationDate());
-        agenda.setAgendaSession(agendaOptional.get().getAgendaSession());
 
         return ResponseEntity.status(HttpStatus.OK).body(agendaRepository.save(agenda));
     }
