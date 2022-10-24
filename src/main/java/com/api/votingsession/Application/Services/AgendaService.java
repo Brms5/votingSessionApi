@@ -2,6 +2,7 @@ package com.api.votingsession.Application.Services;
 
 import com.api.votingsession.Application.Interfaces.IAgendaService;
 import com.api.votingsession.Domain.Dtos.AgendaCreateDto;
+import com.api.votingsession.Domain.Dtos.ResultVoteDto;
 import com.api.votingsession.Domain.Models.Agenda;
 import com.api.votingsession.Domain.Models.Vote;
 import com.api.votingsession.Infrastructure.Repositories.AgendaRepository;
@@ -38,7 +39,7 @@ public class AgendaService implements IAgendaService {
         agenda.setVotes(voteList);
 
         agenda.setRegistrationDate(LocalDateTime.now(ZoneId.of("UTC")));
-        agenda.setVotingClosedDate(LocalDateTime.now(ZoneId.of("UTC")).plusMinutes(1));
+        agenda.setVotingClosedDate(LocalDateTime.now(ZoneId.of("UTC")).plusMinutes(10));
 
         return agendaRepository.save(agenda);
     }
@@ -88,5 +89,29 @@ public class AgendaService implements IAgendaService {
         agenda.setVotingClosedDate(agendaOptional.get().getVotingClosedDate());
 
         return ResponseEntity.status(HttpStatus.OK).body(agendaRepository.save(agenda));
+    }
+
+    public ResponseEntity<Object> GetAllVotesByAgenda(UUID id){
+        Optional<Agenda> agendaOptional = agendaRepository.findById(id);
+
+        if (agendaOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agenda not found!");
+        }
+
+        var agendaVotes = agendaOptional.get().getVotes();
+
+        ResultVoteDto totalVotes = new ResultVoteDto();
+        totalVotes.setTitle(agendaOptional.get().getTitle());
+
+        for (Vote vote: agendaVotes) {
+            var voteEnum = vote.getVote().getCode();
+            if (voteEnum == 1) {
+                totalVotes.setVoteYes(totalVotes.getVoteYes()+1);
+            } else {
+                totalVotes.setVoteNo(totalVotes.getVoteNo()+1);
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(totalVotes);
     }
 }

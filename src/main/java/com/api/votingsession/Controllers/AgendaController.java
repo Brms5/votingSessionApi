@@ -49,4 +49,9 @@ public class AgendaController {
     public ResponseEntity<Object> UpdateAgendaById(@PathVariable(value = "id") UUID id, @RequestBody @Valid AgendaCreateDto agendaCreateDto){
         return ResponseEntity.status(HttpStatus.OK).body(agendaService.UpdateAgendaById(agendaCreateDto, id));
     }
+
+    @GetMapping("/voting-result/{id}")
+    public ResponseEntity<Object> GetAllVotesByAgenda(@PathVariable(value = "id") UUID id){
+        return ResponseEntity.status(HttpStatus.OK).body(agendaService.GetAllVotesByAgenda(id));
+    }
 }
