@@ -8,14 +8,15 @@ import com.api.votingsession.Domain.Models.Vote;
 import com.api.votingsession.Infrastructure.Repositories.AgendaRepository;
 import com.api.votingsession.Infrastructure.Repositories.UserRepository;
 import com.api.votingsession.Infrastructure.Repositories.VoteRepository;
+import com.api.votingsession.Utility.CustomExceptions.RestExceptionHandler;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 @Service
@@ -40,10 +41,25 @@ public class VoteService implements IVoteService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agenda not found!");
         }
 
+        var isVotingSessionClosed = agendaOptional.get().getVotingClosedDate().isBefore(LocalDateTime.now(ZoneId.of("UTC")));
+
+        if (isVotingSessionClosed) {
+            throw new RestExceptionHandler("Voting Session is closed!");
+        }
+
         Optional<User> userOptional = userRepository.findById(voteCreateDto.getUserId());
 
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
+        }
+
+        var agendaVotes = agendaOptional.get().getVotes();
+
+        for (Vote vote: agendaVotes) {
+            var userAlreadyVoted = vote.getUserName().equals(userOptional.get().getName());
+            if (userAlreadyVoted) {
+                throw new RestExceptionHandler("User already voted!");
+            }
         }
 
         Vote vote = new Vote();
@@ -53,7 +69,7 @@ public class VoteService implements IVoteService {
 
         voteRepository.save(vote);
 
-        ArrayList<Vote> voteList = new ArrayList<>();
+        var voteList = agendaOptional.get().getVotes();
         voteList.add(vote);
 
         agendaOptional.get().setVotes(voteList);

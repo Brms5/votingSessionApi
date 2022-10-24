@@ -21,7 +21,7 @@ public class VoteController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> CreateNewVote(@RequestBody @Valid VoteCreateDto voteCreateDto) {
+    public ResponseEntity<Object> CreateNewVote(@RequestBody @Valid VoteCreateDto voteCreateDto) throws Exception {
         return ResponseEntity.status(HttpStatus.CREATED).body(voteService.CreateNewVote(voteCreateDto));
     }
 }
