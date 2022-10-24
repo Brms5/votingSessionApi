@@ -1,7 +1,7 @@
 package com.api.votingsession.Controllers;
 
 import com.api.votingsession.Application.Services.AgendaService;
-import com.api.votingsession.Domain.Dtos.AgendaDto;
+import com.api.votingsession.Domain.Dtos.AgendaCreateDto;
 import com.api.votingsession.Domain.Models.Agenda;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,12 +26,12 @@ public class AgendaController {
     }
 
     @PostMapping
-    public ResponseEntity<Agenda> CreateNewAgenda(@RequestBody @Valid AgendaDto agendaDto){
-        return ResponseEntity.status(HttpStatus.CREATED).body(agendaService.CreateNewAgenda(agendaDto));
+    public ResponseEntity<Agenda> CreateNewAgenda(@RequestBody @Valid AgendaCreateDto agendaCreateDto){
+        return ResponseEntity.status(HttpStatus.CREATED).body(agendaService.CreateNewAgenda(agendaCreateDto));
     }
 
     @GetMapping
-    public ResponseEntity<Page<Agenda>> GetAllAgenda(@PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable ){
+    public ResponseEntity<Page<Agenda>> GetAllAgendas(@PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable ){
         return ResponseEntity.status(HttpStatus.OK).body(agendaService.GetAllAgenda(pageable));
     }
 
@@ -46,7 +46,7 @@ public class AgendaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> UpdateAgendaById(@PathVariable(value = "id") UUID id, @RequestBody @Valid AgendaDto agendaDto){
-        return ResponseEntity.status(HttpStatus.OK).body(agendaService.UpdateAgendaById(agendaDto, id));
+    public ResponseEntity<Object> UpdateAgendaById(@PathVariable(value = "id") UUID id, @RequestBody @Valid AgendaCreateDto agendaCreateDto){
+        return ResponseEntity.status(HttpStatus.OK).body(agendaService.UpdateAgendaById(agendaCreateDto, id));
     }
 }

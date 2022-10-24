@@ -1,10 +1,9 @@
 package com.api.votingsession.Application.Services;
 
-import com.api.votingsession.Domain.Dtos.AgendaDto;
+import com.api.votingsession.Domain.Dtos.AgendaCreateDto;
 import com.api.votingsession.Domain.Models.Agenda;
-import com.api.votingsession.Domain.Models.VotingSession;
+import com.api.votingsession.Domain.Models.Vote;
 import com.api.votingsession.Infrastructure.Repositories.AgendaRepository;
-import com.api.votingsession.Infrastructure.Repositories.VotingSessionRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,22 +22,22 @@ import java.util.UUID;
 public class AgendaService {
 
     final AgendaRepository agendaRepository;
-    final VotingSessionRepository votingSessionRepository;
 
-    public AgendaService(AgendaRepository agendaRepository, VotingSessionRepository votingSessionRepository) {
+    public AgendaService(AgendaRepository agendaRepository){
         this.agendaRepository = agendaRepository;
-        this.votingSessionRepository = votingSessionRepository;
     }
 
     @Transactional
-    public Agenda CreateNewAgenda(AgendaDto agendaDto){
+    public Agenda CreateNewAgenda(AgendaCreateDto agendaCreateDto){
 
         var agenda = new Agenda();
-        BeanUtils.copyProperties(agendaDto, agenda);
-        agenda.setRegistrationDate(LocalDateTime.now(ZoneId.of("UTC")));
+        BeanUtils.copyProperties(agendaCreateDto, agenda);
 
-        var votingSession = new VotingSession();
-        agenda.setVotingSession(votingSession);
+        ArrayList<Vote> voteList = new ArrayList<>();
+        agenda.setVotes(voteList);
+
+        agenda.setRegistrationDate(LocalDateTime.now(ZoneId.of("UTC")));
+        agenda.setVotingClosedDate(LocalDateTime.now(ZoneId.of("UTC")).plusMinutes(1));
 
         return agendaRepository.save(agenda);
     }
@@ -61,20 +61,18 @@ public class AgendaService {
     public ResponseEntity<Object> RemoveAgendaById(UUID id){
 
         Optional<Agenda> agendaOptional = agendaRepository.findById(id);
-        var agendaVotingSession = agendaOptional.get().getVotingSession();
 
         if(agendaOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agenda not found!");
         }
 
-        votingSessionRepository.delete(agendaVotingSession);
         agendaRepository.delete(agendaOptional.get());
 
         return ResponseEntity.status(HttpStatus.OK).body("Agenda deleted successfully!");
     }
 
     @Transactional
-    public ResponseEntity UpdateAgendaById(AgendaDto agendaDto, UUID id){
+    public ResponseEntity<Object> UpdateAgendaById(AgendaCreateDto agendaCreateDto, UUID id){
         Optional<Agenda> agendaOptional = agendaRepository.findById(id);
 
         if (agendaOptional.isEmpty()) {
@@ -82,10 +80,11 @@ public class AgendaService {
         }
 
         var agenda = new Agenda();
-        BeanUtils.copyProperties(agendaDto, agenda);
+        BeanUtils.copyProperties(agendaCreateDto, agenda);
         agenda.setId(agendaOptional.get().getId());
+        agenda.setVotes(agendaOptional.get().getVotes());
         agenda.setRegistrationDate(agendaOptional.get().getRegistrationDate());
-        agenda.setVotingSession(agendaOptional.get().getVotingSession());
+        agenda.setVotingClosedDate(agendaOptional.get().getVotingClosedDate());
 
         return ResponseEntity.status(HttpStatus.OK).body(agendaRepository.save(agenda));
     }
