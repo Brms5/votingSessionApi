@@ -5,6 +5,7 @@ import com.api.votingsession.Domain.Enums.AgendaTopic;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +25,7 @@ public class Agenda implements Serializable {
     private String description;
     @OneToMany
     @Column()
-    private List<Vote> votes;
+    private List<Vote> votes = new ArrayList<>();
     @Column(nullable = false)
     private LocalDateTime registrationDate;
     @Column(nullable = false)
