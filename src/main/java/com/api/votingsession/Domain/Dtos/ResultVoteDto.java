@@ -5,6 +5,14 @@ public class ResultVoteDto {
     private Integer voteYes = 0;
     private Integer voteNo = 0;
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public Integer getVoteYes() {
         return voteYes;
     }
