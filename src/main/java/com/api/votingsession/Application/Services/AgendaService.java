@@ -1,5 +1,6 @@
 package com.api.votingsession.Application.Services;
 
+import com.api.votingsession.Application.Interfaces.IAgendaService;
 import com.api.votingsession.Domain.Dtos.AgendaCreateDto;
 import com.api.votingsession.Domain.Models.Agenda;
 import com.api.votingsession.Domain.Models.Vote;
@@ -19,7 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class AgendaService {
+public class AgendaService implements IAgendaService {
 
     final AgendaRepository agendaRepository;
 

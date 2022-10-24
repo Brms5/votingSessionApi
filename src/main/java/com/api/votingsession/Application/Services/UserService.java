@@ -1,5 +1,6 @@
 package com.api.votingsession.Application.Services;
 
+import com.api.votingsession.Application.Interfaces.IUserService;
 import com.api.votingsession.Domain.Dtos.UserCreateDto;
 import com.api.votingsession.Domain.Models.User;
 import com.api.votingsession.Infrastructure.Repositories.UserRepository;
@@ -15,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class UserService {
+public class UserService implements IUserService {
 
     final UserRepository userRepository;
 

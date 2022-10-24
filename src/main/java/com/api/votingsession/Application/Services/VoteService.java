@@ -1,5 +1,6 @@
 package com.api.votingsession.Application.Services;
 
+import com.api.votingsession.Application.Interfaces.IVoteService;
 import com.api.votingsession.Domain.Dtos.VoteCreateDto;
 import com.api.votingsession.Domain.Models.Agenda;
 import com.api.votingsession.Domain.Models.User;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class VoteService {
+public class VoteService implements IVoteService {
 
     final VoteRepository voteRepository;
     final AgendaRepository agendaRepository;
