@@ -7,10 +7,10 @@ O projeto é uma solução para gerenciar sessões de votação. No cooperativis
 ## :heavy_check_mark: Funcionalidades
 
 Essa solução deve ser executada na nuvem e promover as seguintes funcionalidades através de uma API REST:
-- Cadastrar uma nova pauta(em desenvolvimento);
-- Abrir uma sessão de votação em uma pauta(em desenvolvimento);
-- Receber votos dos associados em pautas(em desenvolvimento);
-- Contabilizar os votos e dar o resultado da votação na pauta(em desenvolvimento).
+- Cadastrar uma nova pauta(desenvolvido);
+- Abrir uma sessão de votação em uma pauta(desenvolvido);
+- Receber votos dos associados em pautas(desenvolvido);
+- Contabilizar os votos e dar o resultado da votação na pauta(desenvolvido).
 
 ## :hammer_and_wrench: Tecnologias
 
