@@ -1,8 +1,8 @@
-package com.api.votingsession.Application.Service;
+package com.api.votingsession.application.service;
 
-import com.api.votingsession.Application.Interface.IUserService;
-import com.api.votingsession.Domain.Dto.UserCreateDto;
-import com.api.votingsession.Domain.Model.User;
+import com.api.votingsession.application.Interface.IUserService;
+import com.api.votingsession.domain.dto.UserCreateDto;
+import com.api.votingsession.domain.model.User;
 import com.api.votingsession.Repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -25,7 +25,7 @@ public class UserService implements IUserService {
     }
 
     @Transactional
-    public User CreateNewUser(UserCreateDto userCreateDto){
+    public User CreateNewUser(UserCreateDto userCreateDto) {
 
         var user = new User();
         BeanUtils.copyProperties(userCreateDto, user);
@@ -33,16 +33,16 @@ public class UserService implements IUserService {
         return userRepository.save(user);
     }
 
-    public Page<User> GetAllUsers(Pageable pageable) { return userRepository.findAll(pageable); }
+    public Page<User> GetAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
+    }
 
     public ResponseEntity<Object> GetUserById(UUID id) {
 
-        Optional<User> userOptional= userRepository.findById(id);
+        Optional<User> userOptional = userRepository.findById(id);
 
-        if(userOptional.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
-        }
+        return userOptional.<ResponseEntity<Object>>map(user -> ResponseEntity.status(HttpStatus.OK).body(user))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!"));
 
-        return ResponseEntity.status(HttpStatus.OK).body(userOptional.get());
     }
 }

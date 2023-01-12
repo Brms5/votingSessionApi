@@ -1,11 +1,11 @@
-package com.api.votingsession.Application.Service;
+package com.api.votingsession.application.service;
 
-import com.api.votingsession.Application.Interface.IAgendaService;
-import com.api.votingsession.Domain.Dto.AgendaCreateDto;
-import com.api.votingsession.Domain.Dto.ResultVoteDto;
-import com.api.votingsession.Domain.Enum.VoteOption;
-import com.api.votingsession.Domain.Model.Agenda;
-import com.api.votingsession.Domain.Model.Vote;
+import com.api.votingsession.application.Interface.IAgendaService;
+import com.api.votingsession.domain.dto.AgendaCreateDto;
+import com.api.votingsession.domain.dto.ResultVoteDto;
+import com.api.votingsession.domain.Enum.VoteOption;
+import com.api.votingsession.domain.model.Agenda;
+import com.api.votingsession.domain.model.Vote;
 import com.api.votingsession.Repository.AgendaRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -20,9 +20,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class AgendaService implements IAgendaService {
 
     final AgendaRepository agendaRepository;
+
+    private static final String NOT_FOUND_MESSAGE = "Agenda not found!";
 
     public AgendaService(AgendaRepository agendaRepository) {
         this.agendaRepository = agendaRepository;
@@ -47,11 +50,9 @@ public class AgendaService implements IAgendaService {
 
         Optional<Agenda> agendaOptional = agendaRepository.findById(id);
 
-        if (agendaOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agenda not found!");
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(agendaOptional.get());
+        if (agendaOptional.isPresent())
+            return ResponseEntity.status(HttpStatus.OK).body(agendaOptional);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE);
     }
 
     @Transactional
@@ -60,7 +61,7 @@ public class AgendaService implements IAgendaService {
         Optional<Agenda> agendaOptional = agendaRepository.findById(id);
 
         if (agendaOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agenda not found!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE);
         }
 
         agendaRepository.delete(agendaOptional.get());
@@ -73,7 +74,7 @@ public class AgendaService implements IAgendaService {
         Optional<Agenda> agendaOptional = agendaRepository.findById(id);
 
         if (agendaOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agenda not found!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE);
         }
 
         var agenda = new Agenda();
@@ -90,7 +91,7 @@ public class AgendaService implements IAgendaService {
         Optional<Agenda> agendaOptional = agendaRepository.findById(id);
 
         if (agendaOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agenda not found!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE);
         }
 
         var agendaVotes = agendaOptional.get().getVotes();

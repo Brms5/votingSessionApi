@@ -1,13 +1,12 @@
-package com.api.votingsession.Domain.Model;
+package com.api.votingsession.domain.model;
 
-import com.api.votingsession.Domain.Enum.AgendaTopic;
+import com.api.votingsession.domain.Enum.AgendaTopic;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,6 +19,7 @@ import java.util.UUID;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "TB_AGENDA", uniqueConstraints = {@UniqueConstraint(columnNames = "id") })
 public class Agenda implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -46,9 +46,7 @@ public class Agenda implements Serializable {
     @Column(nullable = false)
     private LocalDateTime votingClosedDate;
 
-    public Agenda() {
-
-    }
+    public Agenda() {}
 
     public UUID getId() {
         return id;

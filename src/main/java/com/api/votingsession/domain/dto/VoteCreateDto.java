@@ -1,6 +1,6 @@
-package com.api.votingsession.Domain.Dto;
+package com.api.votingsession.domain.dto;
 
-import com.api.votingsession.Domain.Enum.VoteOption;
+import com.api.votingsession.domain.Enum.VoteOption;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.UUID;

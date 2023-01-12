@@ -1,9 +1,7 @@
-package com.api.votingsession.Application.Interface;
+package com.api.votingsession.application.Interface;
 
-import com.api.votingsession.Domain.Dto.AgendaCreateDto;
-import com.api.votingsession.Domain.Model.Agenda;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.api.votingsession.domain.dto.AgendaCreateDto;
+import com.api.votingsession.domain.model.Agenda;
 import org.springframework.http.ResponseEntity;
 
 import java.util.UUID;

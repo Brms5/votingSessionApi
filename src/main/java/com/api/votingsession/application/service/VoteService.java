@@ -1,10 +1,10 @@
-package com.api.votingsession.Application.Service;
+package com.api.votingsession.application.service;
 
-import com.api.votingsession.Application.Interface.IVoteService;
-import com.api.votingsession.Domain.Dto.VoteCreateDto;
-import com.api.votingsession.Domain.Model.Agenda;
-import com.api.votingsession.Domain.Model.User;
-import com.api.votingsession.Domain.Model.Vote;
+import com.api.votingsession.application.Interface.IVoteService;
+import com.api.votingsession.domain.dto.VoteCreateDto;
+import com.api.votingsession.domain.model.Agenda;
+import com.api.votingsession.domain.model.User;
+import com.api.votingsession.domain.model.Vote;
 import com.api.votingsession.Repository.AgendaRepository;
 import com.api.votingsession.Repository.UserRepository;
 import com.api.votingsession.Repository.VoteRepository;
