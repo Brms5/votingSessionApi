@@ -1,4 +1,4 @@
-package com.api.votingsession.Domain.Enum;
+package com.api.votingsession.domain.Enum;
 
 import java.util.Random;
 

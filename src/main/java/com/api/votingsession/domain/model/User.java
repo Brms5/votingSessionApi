@@ -1,4 +1,4 @@
-package com.api.votingsession.Domain.Model;
+package com.api.votingsession.domain.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,7 +1,7 @@
-package com.api.votingsession.Application.Interface;
+package com.api.votingsession.application.Interface;
 
-import com.api.votingsession.Domain.Dto.UserCreateDto;
-import com.api.votingsession.Domain.Model.User;
+import com.api.votingsession.domain.dto.UserCreateDto;
+import com.api.votingsession.domain.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;

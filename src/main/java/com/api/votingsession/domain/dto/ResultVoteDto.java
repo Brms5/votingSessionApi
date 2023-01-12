@@ -1,4 +1,4 @@
-package com.api.votingsession.Domain.Dto;
+package com.api.votingsession.domain.dto;
 
 public class ResultVoteDto {
     private String title;

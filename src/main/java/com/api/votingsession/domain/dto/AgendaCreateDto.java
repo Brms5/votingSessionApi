@@ -1,6 +1,6 @@
-package com.api.votingsession.Domain.Dto;
+package com.api.votingsession.domain.dto;
 
-import com.api.votingsession.Domain.Enum.AgendaTopic;
+import com.api.votingsession.domain.Enum.AgendaTopic;
 import lombok.Builder;
 
 @Builder

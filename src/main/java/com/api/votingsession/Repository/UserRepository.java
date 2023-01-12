@@ -1,6 +1,6 @@
 package com.api.votingsession.Repository;
 
-import com.api.votingsession.Domain.Model.User;
+import com.api.votingsession.domain.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

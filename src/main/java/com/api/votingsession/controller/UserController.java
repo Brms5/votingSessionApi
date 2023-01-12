@@ -1,8 +1,8 @@
-package com.api.votingsession.Controller;
+package com.api.votingsession.controller;
 
-import com.api.votingsession.Application.Service.UserService;
-import com.api.votingsession.Domain.Dto.UserCreateDto;
-import com.api.votingsession.Domain.Model.User;
+import com.api.votingsession.application.service.UserService;
+import com.api.votingsession.domain.dto.UserCreateDto;
+import com.api.votingsession.domain.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,18 +26,18 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> CreateNewUser(@RequestBody @Valid UserCreateDto userCreateDto){
+    public ResponseEntity<User> createNewUser(@RequestBody @Valid UserCreateDto userCreateDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.CreateNewUser(userCreateDto));
     }
 
     @GetMapping
-    public ResponseEntity<Page<User>> GetAllUsers(@PageableDefault(page = 0, size = 10,
+    public ResponseEntity<Page<User>> getAllUsers(@PageableDefault(page = 0, size = 10,
                                         sort = "id", direction = Sort.Direction.ASC) Pageable pageable){
         return ResponseEntity.status(HttpStatus.OK).body(userService.GetAllUsers(pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> GetAgendaById(@PathVariable(value = "id") UUID id) {
+    public ResponseEntity<Object> getAgendaById(@PathVariable(value = "id") UUID id) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.GetUserById(id));
     }
 

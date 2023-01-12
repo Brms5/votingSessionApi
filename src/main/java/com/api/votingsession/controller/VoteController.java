@@ -1,7 +1,7 @@
-package com.api.votingsession.Controller;
+package com.api.votingsession.controller;
 
-import com.api.votingsession.Application.Service.VoteService;
-import com.api.votingsession.Domain.Dto.VoteCreateDto;
+import com.api.votingsession.application.service.VoteService;
+import com.api.votingsession.domain.dto.VoteCreateDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

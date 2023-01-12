@@ -1,11 +1,12 @@
-package com.api.votingsession.Domain.Model;
+package com.api.votingsession.domain.model;
 
-import com.api.votingsession.Domain.Enum.VoteOption;
+import com.api.votingsession.domain.Enum.VoteOption;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Table(name = "TB_VOTE", uniqueConstraints = {@UniqueConstraint(columnNames = "id")})
 @NoArgsConstructor
 public class Vote implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
