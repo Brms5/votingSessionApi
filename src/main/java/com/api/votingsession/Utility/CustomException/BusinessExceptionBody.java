@@ -13,8 +13,6 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BusinessExceptionBody{
     private String code;
-
     private String message;
-
     private String description;
 }

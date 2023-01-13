@@ -1,5 +1,6 @@
 package com.api.votingsession.application.service;
 
+import com.api.votingsession.Utility.CustomException.MessageBusiness;
 import com.api.votingsession.application.Interface.IVoteService;
 import com.api.votingsession.domain.dto.VoteCreateDto;
 import com.api.votingsession.domain.model.Agenda;
@@ -32,32 +33,26 @@ public class VoteService implements IVoteService {
     }
 
     @Transactional
-    public ResponseEntity<Object> CreateNewVote(VoteCreateDto voteCreateDto) {
-
+    public ResponseEntity<Object> createNewVote(VoteCreateDto voteCreateDto) {
         Optional<Agenda> agendaOptional = agendaRepository.findById(voteCreateDto.getAgendaId());
-
-        if (agendaOptional.isEmpty()) {
+        if (agendaOptional.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agenda not found!");
-        }
 
         var isVotingSessionClosed = agendaOptional.get().getVotingClosedDate().isBefore(LocalDateTime.now(ZoneId.of("UTC")));
-
-        if (isVotingSessionClosed) {
-//            throw new RestExceptionHandler("Voting Session is closed!");
-        }
+        if (isVotingSessionClosed)
+            throw MessageBusiness.VOTING_SESSION_CLOSED.createException(agendaOptional.get().getTitle());
 
         Optional<User> userOptional = userRepository.findById(voteCreateDto.getUserId());
 
-        if (userOptional.isEmpty()) {
+        if (userOptional.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
-        }
 
         var agendaVotes = agendaOptional.get().getVotes();
 
         for (Vote vote: agendaVotes) {
             var userAlreadyVoted = vote.getUserName().equals(userOptional.get().getName());
             if (userAlreadyVoted) {
-//                throw new RestExceptionHandler("User already voted!");
+                throw MessageBusiness.ALREADY_VOTED.createException(userOptional.get().getName());
             }
         }
 

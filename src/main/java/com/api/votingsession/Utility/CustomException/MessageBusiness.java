@@ -24,11 +24,13 @@ public enum MessageBusiness {
     GROUP_INVALID(HttpStatus.NOT_FOUND, "Group Invalid", "One or more of the following groups: %s, are not associated with customer: %s"),
     FAIL_TO_REMOVE_USER_GROUPS(HttpStatus.INTERNAL_SERVER_ERROR, "Error removing groups", "Error while trying to remove groups from user: %s."),
     FAIL_TO_SAVE_USER_GROUPS(HttpStatus.INTERNAL_SERVER_ERROR, "Error saving group", "Error while trying to relate group: {identifierGroup: %s, identifierParent: %s} with user: %s."),
-    PASS_THROUGH_ERROR(null, "Unexpected response has been captured from Sasweb Authentication API.", "%s"),;
+    PASS_THROUGH_ERROR(null, "Unexpected response has been captured from Sasweb Authentication API.", "%s"),
+    VOTING_SESSION_CLOSED(HttpStatus.BAD_REQUEST, "Voting Session of the Agenda: {} is closed!", "%s"),
+    ALREADY_VOTED(HttpStatus.BAD_REQUEST, "User: {} already voted!", "%s");
 
-    private HttpStatus status;
-    private String message;
-    private String description;
+    private final HttpStatus status;
+    private final String message;
+    private final String description;
 
     public String formatDescription(String... strings) {
         return String.format(this.description, strings);

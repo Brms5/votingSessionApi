@@ -27,7 +27,6 @@ public class BusinessException extends RuntimeException {
 
     private final String description;
 
-
     public BusinessExceptionBody getOnlyBody(){
         BusinessExceptionBody businessException =  new BusinessExceptionBody();
         businessException.setCode(httpStatusCode.toString());
@@ -35,7 +34,6 @@ public class BusinessException extends RuntimeException {
         businessException.setDescription(this.description);
         return businessException;
     }
-
 
     public String toJson() {
         try {
