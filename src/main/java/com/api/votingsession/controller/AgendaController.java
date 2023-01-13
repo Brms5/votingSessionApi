@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -24,14 +25,16 @@ public class AgendaController {
 
     final AgendaRepository agendaRepository;
 
+    private static final String NOT_FOUND_MESSAGE = "Agenda not found!";
+
     public AgendaController(AgendaService agendaService, AgendaRepository agendaRepository) {
         this.agendaService = agendaService;
         this.agendaRepository = agendaRepository;
     }
 
     @PostMapping
-    public ResponseEntity<Agenda> createNewAgenda(@RequestBody @Valid AgendaCreateDto agendaCreateDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(agendaService.CreateNewAgenda(agendaCreateDto));
+    public ResponseEntity<Object> createNewAgenda(@RequestBody @Valid AgendaCreateDto agendaCreateDto) {
+        return agendaService.createNewAgenda(agendaCreateDto);
     }
 
     @GetMapping
@@ -41,21 +44,24 @@ public class AgendaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getAgendaById(@PathVariable(value = "id") UUID id) {
-        return ResponseEntity.status(HttpStatus.OK).body(agendaService.GetAgendaById(id));
+        Optional<Agenda> agenda = agendaRepository.findById(id);
+        if (agenda.isEmpty())
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE);
+        return ResponseEntity.status(HttpStatus.OK).body(agenda);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> removeAgendaById(@PathVariable(value = "id") UUID id) {
-        return ResponseEntity.status(HttpStatus.OK).body(agendaService.RemoveAgendaById(id));
+        return agendaService.removeAgendaById(id);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateAgendaById(@PathVariable(value = "id") UUID id, @RequestBody @Valid AgendaCreateDto agendaCreateDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(agendaService.UpdateAgendaById(agendaCreateDto, id));
+        return agendaService.updateAgendaById(id, agendaCreateDto);
     }
 
     @GetMapping("/voting-result/{id}")
     public ResponseEntity<Object> getAllVotesByAgenda(@PathVariable(value = "id") UUID id) {
-        return ResponseEntity.status(HttpStatus.OK).body(agendaService.GetAllVotesByAgenda(id));
+        return agendaService.getAllVotesByAgenda(id);
     }
 }

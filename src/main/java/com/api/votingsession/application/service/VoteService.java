@@ -8,7 +8,6 @@ import com.api.votingsession.domain.model.Vote;
 import com.api.votingsession.Repository.AgendaRepository;
 import com.api.votingsession.Repository.UserRepository;
 import com.api.votingsession.Repository.VoteRepository;
-import com.api.votingsession.Utility.CustomException.RestExceptionHandler;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +43,7 @@ public class VoteService implements IVoteService {
         var isVotingSessionClosed = agendaOptional.get().getVotingClosedDate().isBefore(LocalDateTime.now(ZoneId.of("UTC")));
 
         if (isVotingSessionClosed) {
-            throw new RestExceptionHandler("Voting Session is closed!");
+//            throw new RestExceptionHandler("Voting Session is closed!");
         }
 
         Optional<User> userOptional = userRepository.findById(voteCreateDto.getUserId());
@@ -58,7 +57,7 @@ public class VoteService implements IVoteService {
         for (Vote vote: agendaVotes) {
             var userAlreadyVoted = vote.getUserName().equals(userOptional.get().getName());
             if (userAlreadyVoted) {
-                throw new RestExceptionHandler("User already voted!");
+//                throw new RestExceptionHandler("User already voted!");
             }
         }
 

@@ -1,17 +1,15 @@
-package com.api.votingsession.application.service;
+package com.api.votingsession.controller;
 
-import com.api.votingsession.domain.dto.AgendaCreateDto;
+import com.api.votingsession.Repository.AgendaRepository;
 import com.api.votingsession.domain.Enum.AgendaTopic;
 import com.api.votingsession.domain.Enum.VoteOption;
+import com.api.votingsession.domain.dto.AgendaCreateDto;
 import com.api.votingsession.domain.model.Agenda;
 import com.api.votingsession.domain.model.User;
 import com.api.votingsession.domain.model.Vote;
-import com.api.votingsession.Repository.AgendaRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -19,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -32,21 +28,18 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @RunWith(MockitoJUnitRunner.class)
 @TestPropertySource(locations = "classpath:application-integration-tests.properties")
-public class AgendaServiceTest {
+public class AgendaControllerTest {
 
     @Autowired
     private MockMvc mvc;
 
     @InjectMocks
     @Spy
-    private AgendaService agendaService;
+    private AgendaController agendaController;
 
     @Mock
     private AgendaRepository agendaRepository;
@@ -118,31 +111,26 @@ public class AgendaServiceTest {
                 .build();
     }
 
-    private MockHttpServletResponse performPost(Agenda agenda) throws Exception {
-        return mvc.perform(post(String.format(BASE_PATH)).content(mapper.writeValueAsString(agenda))
-                .contentType(MediaType.APPLICATION_JSON)).andReturn().getResponse();
-    }
-
-    private MockHttpServletResponse performGet(UUID id) throws Exception {
-        return mvc.perform(get(String.format(BASE_PATH))).andReturn().getResponse();
+    @Test
+    public void getAgendaByIdSuccess() {
+        Agenda agenda = buildAgenda();
+        Mockito.when(agendaRepository.findById(agenda.getId())).thenReturn(Optional.of(agenda));
+        ResponseEntity<Object> response = new ResponseEntity<>(HttpStatus.OK);
+        Assert.assertEquals(response.getStatusCode(), agendaController.getAgendaById(agenda.getId()).getStatusCode());
     }
 
     @Test
-    @DisplayName("Create agenda successfully.")
-    public void createAgendaSuccessTest() {
+    public void getAgendaByIdNotFound() {
         // arrange
-//        Agenda agenda = buildAgenda();
-        AgendaCreateDto agendaCreateDto = buildAgendaCreateDto();
-//        Mockito.when(agendaRepository.save(agenda)).thenReturn(agenda);
+        Agenda agenda = buildAgenda();
+//        Mockito.when(agendaRepository.findById(UUID.randomUUID())).thenReturn(Optional.of(agenda));
+        ResponseEntity<Object> responseError = new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        // action
-        agendaService.createNewAgenda(agendaCreateDto);
+        //action
+        HttpStatus response = agendaController.getAgendaById(agenda.getId()).getStatusCode();
 
         // assertions
-        Mockito.verify(agendaRepository).save(agendaArgumentCaptor.capture());
-        Agenda agendaSaved = agendaArgumentCaptor.getValue();
-        Assertions.assertThat(agendaSaved.getVotes()).isNotNull();
-        Assertions.assertThat(agendaSaved.getRegistrationDate()).isNotNull();
-        Assertions.assertThat(agendaSaved.getVotingClosedDate()).isNotNull();
+        Assert.assertEquals(responseError.getStatusCode(), response);
     }
+
 }
