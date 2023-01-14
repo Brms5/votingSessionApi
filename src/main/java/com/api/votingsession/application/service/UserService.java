@@ -5,8 +5,6 @@ import com.api.votingsession.domain.dto.UserCreateDto;
 import com.api.votingsession.domain.model.User;
 import com.api.votingsession.Repository.UserRepository;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -26,23 +24,14 @@ public class UserService implements IUserService {
 
     @Transactional
     public User CreateNewUser(UserCreateDto userCreateDto) {
-
         var user = new User();
         BeanUtils.copyProperties(userCreateDto, user);
-
         return userRepository.save(user);
     }
 
-    public Page<User> GetAllUsers(Pageable pageable) {
-        return userRepository.findAll(pageable);
-    }
-
     public ResponseEntity<Object> GetUserById(UUID id) {
-
         Optional<User> userOptional = userRepository.findById(id);
-
         return userOptional.<ResponseEntity<Object>>map(user -> ResponseEntity.status(HttpStatus.OK).body(user))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!"));
-
     }
 }

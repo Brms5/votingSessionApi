@@ -1,5 +1,6 @@
 package com.api.votingsession.controller;
 
+import com.api.votingsession.Repository.UserRepository;
 import com.api.votingsession.application.service.UserService;
 import com.api.votingsession.domain.dto.UserCreateDto;
 import com.api.votingsession.domain.model.User;
@@ -21,24 +22,27 @@ public class UserController {
 
     final UserService userService;
 
-    public UserController(UserService userService) {
+    final UserRepository userRepository;
+
+    public UserController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping
-    public ResponseEntity<User> createNewUser(@RequestBody @Valid UserCreateDto userCreateDto){
+    public ResponseEntity<User> createNewUser(@RequestBody @Valid UserCreateDto userCreateDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.CreateNewUser(userCreateDto));
     }
 
     @GetMapping
     public ResponseEntity<Page<User>> getAllUsers(@PageableDefault(page = 0, size = 10,
-                                        sort = "id", direction = Sort.Direction.ASC) Pageable pageable){
-        return ResponseEntity.status(HttpStatus.OK).body(userService.GetAllUsers(pageable));
+            sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(userRepository.findAll(pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getAgendaById(@PathVariable(value = "id") UUID id) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.GetUserById(id));
+    public ResponseEntity<Object> getUserById(@PathVariable(value = "id") UUID id) {
+        return userService.GetUserById(id);
     }
 
 }
