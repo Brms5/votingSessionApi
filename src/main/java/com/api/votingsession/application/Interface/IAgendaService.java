@@ -9,5 +9,4 @@ public interface IAgendaService {
     ResponseEntity<Object> createNewAgenda(AgendaCreateDto agendaCreateDto);
     ResponseEntity<Object> removeAgendaById(UUID id);
     ResponseEntity<Object> updateAgendaById(UUID id, AgendaCreateDto agendaCreateDto);
-    ResponseEntity<Object> getAllVotesByAgenda(UUID id);
 }

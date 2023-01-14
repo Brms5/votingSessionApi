@@ -2,6 +2,8 @@ package com.api.votingsession.application.service;
 
 import com.api.votingsession.Utility.CustomException.MessageBusiness;
 import com.api.votingsession.application.Interface.IVoteService;
+import com.api.votingsession.domain.Enum.VoteOption;
+import com.api.votingsession.domain.dto.ResultVoteDto;
 import com.api.votingsession.domain.dto.VoteCreateDto;
 import com.api.votingsession.domain.model.Agenda;
 import com.api.votingsession.domain.model.User;
@@ -18,6 +20,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class VoteService implements IVoteService {
@@ -26,10 +29,34 @@ public class VoteService implements IVoteService {
     final AgendaRepository agendaRepository;
     final UserRepository userRepository;
 
+    private static final String NOT_FOUND_MESSAGE = "Agenda not found!";
+
     public VoteService(VoteRepository voteRepository, AgendaRepository agendaRepository, UserRepository userRepository) {
         this.voteRepository = voteRepository;
         this.agendaRepository = agendaRepository;
         this.userRepository = userRepository;
+    }
+
+    public ResponseEntity<Object> getAllVotesByAgenda(UUID id) {
+        Optional<Agenda> agenda = agendaRepository.findById(id);
+
+        if (agenda.isEmpty())
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE);
+
+        var agendaVotes = agenda.get().getVotes();
+        ResultVoteDto totalVotes = new ResultVoteDto();
+        totalVotes.setTitle(agenda.get().getTitle());
+
+        for (Vote vote : agendaVotes) {
+            var voteEnum = vote.getVote();
+            if (voteEnum == VoteOption.SIM) {
+                totalVotes.setVoteYes(totalVotes.getVoteYes() + 1);
+            } else {
+                totalVotes.setVoteNo(totalVotes.getVoteNo() + 1);
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(totalVotes);
     }
 
     @Transactional

@@ -73,26 +73,4 @@ public class AgendaService implements IAgendaService {
 
         return ResponseEntity.status(HttpStatus.OK).body(agendaRepository.save(newAgenda));
     }
-
-    public ResponseEntity<Object> getAllVotesByAgenda(UUID id) {
-        Optional<Agenda> agenda = agendaRepository.findById(id);
-
-        if (agenda.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE);
-
-        var agendaVotes = agenda.get().getVotes();
-        ResultVoteDto totalVotes = new ResultVoteDto();
-        totalVotes.setTitle(agenda.get().getTitle());
-
-        for (Vote vote : agendaVotes) {
-            var voteEnum = vote.getVote();
-            if (voteEnum == VoteOption.SIM) {
-                totalVotes.setVoteYes(totalVotes.getVoteYes() + 1);
-            } else {
-                totalVotes.setVoteNo(totalVotes.getVoteNo() + 1);
-            }
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(totalVotes);
-    }
 }
