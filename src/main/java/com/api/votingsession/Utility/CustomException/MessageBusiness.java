@@ -25,7 +25,7 @@ public enum MessageBusiness {
     FAIL_TO_REMOVE_USER_GROUPS(HttpStatus.INTERNAL_SERVER_ERROR, "Error removing groups", "Error while trying to remove groups from user: %s."),
     FAIL_TO_SAVE_USER_GROUPS(HttpStatus.INTERNAL_SERVER_ERROR, "Error saving group", "Error while trying to relate group: {identifierGroup: %s, identifierParent: %s} with user: %s."),
     PASS_THROUGH_ERROR(null, "Unexpected response has been captured from Sasweb Authentication API.", "%s"),
-    VOTING_SESSION_CLOSED(HttpStatus.BAD_REQUEST, "Voting Session of the Agenda: {} is closed!", "%s"),
+    VOTING_SESSION_CLOSED(HttpStatus.BAD_REQUEST, "Voting Session is closed!", "The selected Agenda: %s has already been voted."),
     ALREADY_VOTED(HttpStatus.BAD_REQUEST, "User: {} already voted!", "%s");
 
     private final HttpStatus status;

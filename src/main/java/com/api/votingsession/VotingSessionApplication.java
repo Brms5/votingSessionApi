@@ -9,13 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @SpringBootApplication
 @RestController
 public class VotingSessionApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(VotingSessionApplication.class, args);
-	}
-
-	@GetMapping("/")
-	public String index(){
-		return "Olá Mundo!";
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(VotingSessionApplication.class, args);
+    }
 }
