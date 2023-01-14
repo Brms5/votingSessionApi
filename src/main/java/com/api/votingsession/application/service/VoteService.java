@@ -34,40 +34,39 @@ public class VoteService implements IVoteService {
 
     @Transactional
     public ResponseEntity<Object> createNewVote(VoteCreateDto voteCreateDto) {
-        Optional<Agenda> agendaOptional = agendaRepository.findById(voteCreateDto.getAgendaId());
-        if (agendaOptional.isEmpty())
+        Optional<Agenda> agenda = agendaRepository.findById(voteCreateDto.getAgendaId());
+        if (agenda.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agenda not found!");
 
-        var isVotingSessionClosed = agendaOptional.get().getVotingClosedDate().isBefore(LocalDateTime.now(ZoneId.of("UTC")));
+        var isVotingSessionClosed = agenda.get().getVotingClosedDate().isBefore(LocalDateTime.now(ZoneId.of("UTC")));
         if (isVotingSessionClosed)
-            throw MessageBusiness.VOTING_SESSION_CLOSED.createException(agendaOptional.get().getTitle());
+            throw MessageBusiness.VOTING_SESSION_CLOSED.createException(agenda.get().getTitle());
 
-        Optional<User> userOptional = userRepository.findById(voteCreateDto.getUserId());
-
-        if (userOptional.isEmpty())
+        Optional<User> user = userRepository.findById(voteCreateDto.getUserId());
+        if (user.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
 
-        var agendaVotes = agendaOptional.get().getVotes();
+        var agendaVotes = agenda.get().getVotes();
 
-        for (Vote vote: agendaVotes) {
-            var userAlreadyVoted = vote.getUserName().equals(userOptional.get().getName());
+        for (Vote vote : agendaVotes) {
+            var userAlreadyVoted = vote.getUserName().equals(user.get().getName());
             if (userAlreadyVoted) {
-                throw MessageBusiness.ALREADY_VOTED.createException(userOptional.get().getName());
+                throw MessageBusiness.ALREADY_VOTED.createException(user.get().getName());
             }
         }
 
         Vote vote = new Vote();
         BeanUtils.copyProperties(voteCreateDto, vote);
-        vote.setUserName(userOptional.get().getName());
-        vote.setAgendaTitle(agendaOptional.get().getTitle());
+        vote.setUserName(user.get().getName());
+        vote.setAgendaTitle(agenda.get().getTitle());
 
         voteRepository.save(vote);
 
-        var voteList = agendaOptional.get().getVotes();
+        var voteList = agenda.get().getVotes();
         voteList.add(vote);
 
-        agendaOptional.get().setVotes(voteList);
-        agendaRepository.save(agendaOptional.get());
+        agenda.get().setVotes(voteList);
+        agendaRepository.save(agenda.get());
 
         return ResponseEntity.status(HttpStatus.OK).body("Vote created successfully!");
     }

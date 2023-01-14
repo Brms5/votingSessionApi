@@ -12,7 +12,7 @@ public enum MessageBusiness {
 
     USER_NOT_ALL_AVAILABLE(HttpStatus.BAD_REQUEST, "User Search couldn't be performed", "%s"),
     INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "MISSING_VALUE", "%s"),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found", "%s"),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User {} not found", "%s"),
     USER_NOT_NEW(HttpStatus.BAD_REQUEST, "USER_NOT_NEW", "User %s has already logged in"),
     FIELD_REQUIRED(HttpStatus.BAD_REQUEST, "Request field missing", "%s"),
     OPERATION_FORBIDEN(HttpStatus.FORBIDDEN, "Operation not allowed", "Forbidden Access"),
