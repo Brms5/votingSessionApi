@@ -1,7 +1,5 @@
 package com.api.votingsession.domain.Entity;
 
-import com.api.votingsession.domain.Enum.AgendaTopic;
-
 import javax.persistence.*;
 
 @Entity

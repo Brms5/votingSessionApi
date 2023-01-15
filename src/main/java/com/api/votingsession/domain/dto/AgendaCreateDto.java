@@ -3,6 +3,8 @@ package com.api.votingsession.domain.dto;
 import com.api.votingsession.domain.Enum.AgendaTopic;
 import lombok.Builder;
 
+import java.util.UUID;
+
 @Builder
 public class AgendaCreateDto {
 
@@ -12,6 +14,16 @@ public class AgendaCreateDto {
     private String title;
 
     private String description;
+
+    private UUID userId;
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
+    }
 
     public AgendaTopic getTopic() {
         return topic;

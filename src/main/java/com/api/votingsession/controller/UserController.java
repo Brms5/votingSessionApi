@@ -45,12 +45,12 @@ public class UserController {
             sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userRepository.findAll(pageable));
     }
+
     @PostMapping
     @ApiOperation(value = "Create new user", notes = "Search for all users")
     public ResponseEntity<User> createNewUser(@RequestBody @Valid UserCreateDto userCreateDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.CreateNewUser(userCreateDto));
     }
-
 
     @GetMapping("/{id}")
     @ApiOperation(value = "Request user by ID", notes = "Search for a specific user")

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @Transactional
@@ -23,6 +24,12 @@ public class TopicService implements ITopicService {
 
     @Transactional
     public ResponseEntity<Object> createNewTopic(String topic) {
+        List<Topic> topicList = topicRepository.findAll();
+        for ( Topic topic1 : topicList ) {
+            if (topic1.getTopic().equals(topic))
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(MessageBusiness.TOPIC_INVALID.createException(topic).getMessage());
+        }
+
         for ( AgendaTopic enumTopic : AgendaTopic.values() ) {
             if (topic.equals(enumTopic.toString())) {
                 Topic newTopic = new Topic();
@@ -30,6 +37,7 @@ public class TopicService implements ITopicService {
                 return ResponseEntity.status(HttpStatus.CREATED).body(topicRepository.save(newTopic));
             }
         }
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(MessageBusiness.TOPIC_INVALID.createException(topic).getMessage());
     }
 }

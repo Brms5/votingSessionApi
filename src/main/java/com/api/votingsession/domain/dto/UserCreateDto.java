@@ -1,5 +1,7 @@
 package com.api.votingsession.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
 import javax.validation.constraints.NotBlank;
@@ -8,6 +10,11 @@ import javax.validation.constraints.NotBlank;
 public class UserCreateDto {
     @NotBlank
     private String name;
+
+    @JsonCreator
+    UserCreateDto(@JsonProperty("name") String name) {
+        this.name = name;
+    }
 
     public String getName() {
         return name;
