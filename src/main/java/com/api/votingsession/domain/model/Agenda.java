@@ -36,8 +36,12 @@ public class Agenda implements Serializable {
     @Column(nullable = false, unique = true, length = 999)
     private String description;
 
+    @OneToOne(targetEntity = User.class)
+    @JoinColumn
+    private UUID user;
+
     @OneToMany
-    @Column()
+    @Column
     private List<Vote> votes = new ArrayList<>();
 
     @Column(nullable = false)
