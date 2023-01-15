@@ -2,8 +2,6 @@ package com.api.votingsession.application.service;
 
 import com.api.votingsession.application.Interface.IAgendaService;
 import com.api.votingsession.domain.dto.AgendaCreateDto;
-import com.api.votingsession.domain.dto.ResultVoteDto;
-import com.api.votingsession.domain.Enum.VoteOption;
 import com.api.votingsession.domain.model.Agenda;
 import com.api.votingsession.domain.model.Vote;
 import com.api.votingsession.Repository.AgendaRepository;
