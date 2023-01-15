@@ -9,18 +9,25 @@ import javax.persistence.*;
 public class Topic {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.TABLE)
+    private Integer id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "AgendaTopic")
-    private AgendaTopic topic;
+    @Column(nullable = false, unique = true, length = 20)
+    private String topic;
 
-    public AgendaTopic getTopic() {
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getTopic() {
         return topic;
     }
 
-    public void setTopic(AgendaTopic topic) {
+    public void setTopic(String topic) {
         this.topic = topic;
     }
 }
