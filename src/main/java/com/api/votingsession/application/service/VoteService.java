@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -63,7 +64,7 @@ public class VoteService implements IVoteService {
     public ResponseEntity<Object> createNewVote(VoteCreateDto voteCreateDto) {
         Optional<Agenda> agenda = agendaRepository.findById(voteCreateDto.getAgendaId());
         if (agenda.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agenda not found!");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE);
 
         var isVotingSessionClosed = agenda.get().getVotingClosedDate().isBefore(LocalDateTime.now(ZoneId.of("UTC")));
         if (isVotingSessionClosed)
@@ -73,8 +74,16 @@ public class VoteService implements IVoteService {
         if (user.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
 
-        var agendaVotes = agenda.get().getVotes();
+        if (!user.get().getAgenda().isEmpty()) {
+            List<Agenda> agendaList = user.get().getAgenda();
+            for ( Agenda eachAgenda : agendaList ) {
+                if (eachAgenda.getId().equals(agenda.get().getId()))
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(MessageBusiness.USER_CANNOT_VOTE.getMessage());
 
+            }
+        }
+
+        List<Vote> agendaVotes = agenda.get().getVotes();
         for (Vote vote : agendaVotes) {
             var userAlreadyVoted = vote.getUserName().equals(user.get().getName());
             if (userAlreadyVoted) {
