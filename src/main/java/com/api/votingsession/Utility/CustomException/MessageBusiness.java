@@ -27,7 +27,8 @@ public enum MessageBusiness {
     PASS_THROUGH_ERROR(null, "Unexpected response has been captured from Sasweb Authentication API.", "%s"),
     VOTING_SESSION_CLOSED(HttpStatus.BAD_REQUEST, "Voting Session is closed!", "The selected Agenda: %s has already been voted."),
     TOPIC_INVALID(HttpStatus.BAD_REQUEST, "The entered topic is not valid.", "%s"),
-    ALREADY_VOTED(HttpStatus.BAD_REQUEST, "User: {} already voted!", "%s");
+    ALREADY_VOTED(HttpStatus.BAD_REQUEST, "User: {} already voted!", "%s"),
+    USER_CANNOT_VOTE(HttpStatus.BAD_REQUEST, "The user cannot vote on the agenda he created.", "%s");
 
     private final HttpStatus status;
     private final String message;

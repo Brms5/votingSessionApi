@@ -47,7 +47,7 @@ public class AgendaService implements IAgendaService {
         ArrayList<Vote> voteList = new ArrayList<>();
         agenda.setVotes(voteList);
         agenda.setRegistrationDate(LocalDateTime.now(ZoneId.of("UTC")));
-        agenda.setVotingClosedDate(agenda.getRegistrationDate().plusMinutes(10));
+        agenda.setVotingClosedDate(agenda.getRegistrationDate().plusDays(1));
 
         List<Agenda> agendaList = new ArrayList<>();
         agendaList.add(agenda);
