@@ -47,7 +47,7 @@ public class UserController {
     }
 
     @PostMapping
-    @ApiOperation(value = "Create new user", notes = "Search for all users")
+    @ApiOperation(value = "Create new user", notes = "Create a user to vote on user's agendas and create your own agendas.")
     public ResponseEntity<User> createNewUser(@RequestBody @Valid UserCreateDto userCreateDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.CreateNewUser(userCreateDto));
     }
