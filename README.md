@@ -2,7 +2,7 @@
 
 ## :notebook: About
 
-The project is a simulator of parking management, used for studies.
+This project is a solution to voting session management. In cooperativism, each member has one vote and decisions are made in assemblies, by voting. From this, the project will be the solution to manage these voting sessions.
 
 ## :heavy_check_mark: Features
 
