@@ -28,7 +28,8 @@ public class VoteController {
     }
 
     @PostMapping
-    @ApiOperation(value = "Create new vote for an agenda", notes = "Create new user vote for a specific agenda")
+    @ApiOperation(value = "Create new vote for an agenda",
+            notes = "Create new vote for a specific agenda. In the Voting Session, Agendas only can be voted for 1 day. So from the moment the Agenda is created, there is only one more day to vote on it.")
     public ResponseEntity<Object> createNewVote(@RequestBody @Valid VoteCreateDto voteCreateDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(voteService.createNewVote(voteCreateDto));
     }
