@@ -51,4 +51,8 @@ IV) Para iniciar o projeto
 $ mvn spring-boot:run
 
 O servidor inciará na porta:8080 - acesse <http://localhost:8080>
+
+$ swagger
+
+Os endpoints estão documentados no swagger: http://localhost:8080/swagger-ui/index.html#/
 ```
