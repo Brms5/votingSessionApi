@@ -1,5 +1,6 @@
 package com.api.votingsession.application.service;
 
+import com.api.votingsession.Repository.UserRepository;
 import com.api.votingsession.domain.dto.AgendaCreateDto;
 import com.api.votingsession.domain.Enum.AgendaTopic;
 import com.api.votingsession.domain.Enum.VoteOption;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -20,7 +22,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -53,6 +54,9 @@ public class AgendaServiceTest {
 
     @Captor
     ArgumentCaptor<Agenda> agendaArgumentCaptor;
+
+    @Mock
+    private UserRepository userRepository;
 
     private static final String BASE_PATH = "http://localhost:8080/agenda";
 
@@ -127,16 +131,25 @@ public class AgendaServiceTest {
         return mvc.perform(get(String.format(BASE_PATH))).andReturn().getResponse();
     }
 
+    @AfterEach
+    public void testCompleted() {
+        System.out.println("The test has been completed.");
+    }
+
     @Test
     @DisplayName("Create agenda successfully.")
     public void createAgendaSuccessTest() {
         // arrange
-//        Agenda agenda = buildAgenda();
         AgendaCreateDto agendaCreateDto = buildAgendaCreateDto();
-//        Mockito.when(agendaRepository.save(agenda)).thenReturn(agenda);
+        User user = buildUser();
+        user.setId(agendaCreateDto.getUserId());
+        HttpStatus expectedResponse = HttpStatus.CREATED;
+
+        // setting mock behavior
+        Mockito.when(userRepository.findById(agendaCreateDto.getUserId())).thenReturn(Optional.of(user));
 
         // action
-        agendaService.createNewAgenda(agendaCreateDto);
+        HttpStatus response = agendaService.createNewAgenda(agendaCreateDto).getStatusCode();
 
         // assertions
         Mockito.verify(agendaRepository).save(agendaArgumentCaptor.capture());
@@ -144,5 +157,6 @@ public class AgendaServiceTest {
         Assertions.assertThat(agendaSaved.getVotes()).isNotNull();
         Assertions.assertThat(agendaSaved.getRegistrationDate()).isNotNull();
         Assertions.assertThat(agendaSaved.getVotingClosedDate()).isNotNull();
+        Assert.assertEquals(expectedResponse, response);
     }
 }
