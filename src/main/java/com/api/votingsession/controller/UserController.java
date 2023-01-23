@@ -49,13 +49,19 @@ public class UserController {
     @PostMapping
     @ApiOperation(value = "Create new user", notes = "Create a user to vote on user's agendas and create your own agendas.")
     public ResponseEntity<User> createNewUser(@RequestBody @Valid UserCreateDto userCreateDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.CreateNewUser(userCreateDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createNewUser(userCreateDto));
     }
 
     @GetMapping("/{id}")
     @ApiOperation(value = "Request user by ID", notes = "Search for a specific user")
     public ResponseEntity<Object> getUserById(@PathVariable(value = "id") UUID id) {
-        return userService.GetUserById(id);
+        return userService.getUserById(id);
+    }
+
+    @PutMapping("/{id}")
+    @ApiOperation(value = "Update user by ID", notes = "Update a specific user")
+    public ResponseEntity<Object> updateUserById(@PathVariable(value = "id") UUID id, @RequestBody @Valid UserCreateDto userCreateDto) {
+        return userService.updateUserById(id, userCreateDto);
     }
 
 }

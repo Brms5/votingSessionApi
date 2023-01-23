@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.UUID;
 
 public interface IUserService {
-    User CreateNewUser(UserCreateDto userCreateDto);
-    ResponseEntity<Object> GetUserById(UUID id);
+    User createNewUser(UserCreateDto userCreateDto);
+    ResponseEntity<Object> getUserById(UUID id);
+    ResponseEntity<Object> updateUserById(UUID id, UserCreateDto userCreateDto);
 }
