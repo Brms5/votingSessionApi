@@ -1,5 +1,9 @@
 package com.api.votingsession.application.service;
 
+import com.api.votingsession.Repository.AgendaRepository;
+import com.api.votingsession.Repository.UserRepository;
+import com.api.votingsession.Repository.VoteRepository;
+import com.api.votingsession.Utility.CustomException.BusinessException;
 import com.api.votingsession.Utility.CustomException.MessageBusiness;
 import com.api.votingsession.application.Interface.IVoteService;
 import com.api.votingsession.domain.Enum.VoteOption;
@@ -8,9 +12,6 @@ import com.api.votingsession.domain.dto.VoteCreateDto;
 import com.api.votingsession.domain.model.Agenda;
 import com.api.votingsession.domain.model.User;
 import com.api.votingsession.domain.model.Vote;
-import com.api.votingsession.Repository.AgendaRepository;
-import com.api.votingsession.Repository.UserRepository;
-import com.api.votingsession.Repository.VoteRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,11 +39,11 @@ public class VoteService implements IVoteService {
         this.userRepository = userRepository;
     }
 
-    public ResponseEntity<Object> getAllVotesByAgenda(UUID id) {
+    public ResponseEntity<ResultVoteDto> getAllVotesByAgenda(UUID id) {
         Optional<Agenda> agenda = agendaRepository.findById(id);
 
         if (agenda.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE);
+            throw MessageBusiness.AGENDA_NOT_FOUND.createException();
 
         var agendaVotes = agenda.get().getVotes();
         ResultVoteDto totalVotes = new ResultVoteDto();
@@ -61,7 +62,7 @@ public class VoteService implements IVoteService {
     }
 
     @Transactional
-    public ResponseEntity<Object> createNewVote(VoteCreateDto voteCreateDto) {
+    public ResponseEntity<Object> createNewVote(VoteCreateDto voteCreateDto) throws BusinessException {
         Optional<Agenda> agenda = agendaRepository.findById(voteCreateDto.getAgendaId());
         if (agenda.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE);
@@ -104,6 +105,6 @@ public class VoteService implements IVoteService {
         agenda.get().setVotes(voteList);
         agendaRepository.save(agenda.get());
 
-        return ResponseEntity.status(HttpStatus.OK).body("Vote created successfully!");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Vote created successfully!");
     }
 }
