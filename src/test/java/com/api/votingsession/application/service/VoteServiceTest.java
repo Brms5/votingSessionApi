@@ -187,13 +187,8 @@ public class VoteServiceTest {
         VoteCreateDto voteCreateDto = buildVoteCreateDto();
         Agenda agenda = buildAgenda();
         agenda.setVotingClosedDate(LocalDateTime.now());
-//        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.CREATED).body("Vote created successfully!");
         when(agendaRepository.findById(voteCreateDto.getAgendaId())).thenReturn(Optional.of(agenda));
-//        Mockito.doThrow(new BusinessException(HttpStatus.BAD_REQUEST, "Voting Session is closed!", "The selected Agenda: %s has already been voted."))
-//                .when(voteService).createNewVote(voteCreateDto);
         BusinessException exception = org.junit.jupiter.api.Assertions.assertThrows(BusinessException.class, () -> voteService.createNewVote(voteCreateDto));
-//        ResponseEntity<Object> response = voteService.createNewVote(voteCreateDto);
-//        assertEquals("Voting Session is closed!", exception.getMessage());
         assertTrue(exception.getMessage().contentEquals("Voting Session is closed!"));
     }
 
