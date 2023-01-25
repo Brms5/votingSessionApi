@@ -1,5 +1,7 @@
 package com.api.votingsession.domain.dto;
 
+import lombok.Builder;
+
 public class ResultVoteDto {
     private String title;
     private Integer voteYes = 0;

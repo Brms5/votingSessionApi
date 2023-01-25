@@ -1,9 +1,16 @@
 package com.api.votingsession.domain.Entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
+@Builder
 @Entity
+@AllArgsConstructor
 @Table(name = "TB_TOPIC", uniqueConstraints = {@UniqueConstraint(columnNames = "id")})
+@NoArgsConstructor
 public class Topic {
 
     @Id
@@ -29,3 +36,4 @@ public class Topic {
         this.topic = topic;
     }
 }
+

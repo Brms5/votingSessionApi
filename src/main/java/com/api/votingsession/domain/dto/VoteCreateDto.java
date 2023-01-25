@@ -2,17 +2,19 @@ package com.api.votingsession.domain.dto;
 
 import com.api.votingsession.domain.Enum.VoteOption;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.Builder;
 
 import java.util.UUID;
 
+@Builder
 public class VoteCreateDto {
-    //    @NotBlank
+
     @JsonDeserialize
     private UUID agendaId;
-    //    @NotBlank
+
     @JsonDeserialize
     private UUID userId;
-    //    @NotBlank
+
     private VoteOption vote;
 
     public UUID getAgendaId() {
