@@ -1,6 +1,7 @@
 package com.api.votingsession.controller;
 
 import com.api.votingsession.Repository.AgendaRepository;
+import com.api.votingsession.Utility.ResponsePageable.CustomPage;
 import com.api.votingsession.application.service.AgendaService;
 import com.api.votingsession.domain.Enum.AgendaTopic;
 import com.api.votingsession.domain.Enum.VoteOption;
@@ -119,13 +120,13 @@ public class AgendaControllerTest {
         Pageable pageable = PageRequest.of(0, 1);
         List<Agenda> agendaList = Arrays.asList(buildAgenda(), buildAgenda());
         Page<Agenda> agendaPage = new PageImpl<>(agendaList, pageable, agendaList.size());
-        ResponseEntity<Page<Agenda>> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(agendaPage);
+        ResponseEntity<CustomPage<Agenda>> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(new CustomPage<>(agendaPage));
 
         // setup mockito behavior
         Mockito.when(agendaRepository.findAll(pageable)).thenReturn(agendaPage);
 
         // action
-        ResponseEntity<Page<Agenda>> response = agendaController.getAllAgendas(pageable);
+        ResponseEntity<CustomPage<Agenda>> response = agendaController.getAllAgendas(pageable);
 
         // assertions
         Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
