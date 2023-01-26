@@ -39,9 +39,9 @@ public class AgendaController {
     @GetMapping
     @ApiOperation(value = "Request all agendas", notes = "Search for all agendas")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", dataType = "integer", paramType = "query",
+            @ApiImplicitParam(name = "page", dataTypeClass = Integer.class, paramType = "query",
                     value = "Results page you want to retrieve"),
-            @ApiImplicitParam(name = "size", dataType = "integer", paramType = "query",
+            @ApiImplicitParam(name = "size", dataTypeClass = Integer.class, paramType = "query",
                     value = "Number of records per page.")
     })
     public ResponseEntity<CustomPage<Agenda>> getAllAgendas(@ApiIgnore @PageableDefault(page = 0, size = 10, sort = "id",
