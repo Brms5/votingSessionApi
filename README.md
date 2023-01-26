@@ -28,7 +28,11 @@ The following technologies were used in the construction of the project:
 - Validation
 - PostgreSQL Driver
 
-## 	:leftwards_arrow_with_hook: Requirements to use the system
+## :floppy_disk: Database
+          
+![image](https://user-images.githubusercontent.com/83079569/214729544-874e9896-10ce-4587-969f-9b4aac349c1d.png)
+
+## :leftwards_arrow_with_hook: Requirements to use the system
 
 You must have installed on your machine the tool [Git](https://git-scm.com/) and a nice editor, to work on the code. I recomend the [IntelliJ IDEA](https://www.jetbrains.com/idea/).
 To run the routes, this project has the endpoints documented in swagger(http://localhost:8080/swagger-ui/index.html#/).
