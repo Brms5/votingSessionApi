@@ -1,6 +1,7 @@
 package com.api.votingsession.controller;
 
 import com.api.votingsession.Repository.UserRepository;
+import com.api.votingsession.Utility.ResponsePageable.CustomPage;
 import com.api.votingsession.application.service.UserService;
 import com.api.votingsession.domain.dto.UserCreateDto;
 import com.api.votingsession.domain.model.User;
@@ -57,13 +58,13 @@ public class UserControllerTest {
         Pageable pageable = PageRequest.of(0, 1);
         List<User> userList = Arrays.asList(buildUser(), buildUser());
         Page<User> userPage = new PageImpl<>(userList, pageable, userList.size());
-        ResponseEntity<Page<User>> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(userPage);
+        ResponseEntity<CustomPage<User>> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(new CustomPage<>(userPage));
 
         // setup mockito behavior
         Mockito.when(userRepository.findAll(pageable)).thenReturn(userPage);
 
         // action
-        ResponseEntity<Page<User>> response = userController.getAllUsers(pageable);
+        ResponseEntity<CustomPage<User>> response = userController.getAllUsers(pageable);
 
         // assertions
         Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());

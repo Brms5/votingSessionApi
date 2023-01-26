@@ -1,13 +1,13 @@
 package com.api.votingsession.controller;
 
 import com.api.votingsession.Repository.UserRepository;
+import com.api.votingsession.Utility.ResponsePageable.CustomPage;
 import com.api.votingsession.application.service.UserService;
 import com.api.votingsession.domain.dto.UserCreateDto;
 import com.api.votingsession.domain.model.User;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -18,6 +18,8 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.UUID;
+
+
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -36,14 +38,14 @@ public class UserController {
     @GetMapping
     @ApiOperation(value = "Request all Users", notes = "Search for all Users")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", dataType = "integer", paramType = "query",
+            @ApiImplicitParam(name = "page", dataTypeClass = Integer.class, paramType = "query",
                     value = "Results page you want to retrieve"),
-            @ApiImplicitParam(name = "size", dataType = "integer", paramType = "query",
+            @ApiImplicitParam(name = "size", dataTypeClass = Integer.class, paramType = "query",
                     value = "Number of records per page.")
     })
-    public ResponseEntity<Page<User>> getAllUsers(@ApiIgnore @PageableDefault(page = 0, size = 10,
+    public ResponseEntity<CustomPage<User>> getAllUsers(@ApiIgnore @PageableDefault(page = 0, size = 10,
             sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(userRepository.findAll(pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(new CustomPage<>(userRepository.findAll(pageable)));
     }
 
     @PostMapping
