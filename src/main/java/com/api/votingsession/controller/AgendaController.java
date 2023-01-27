@@ -1,6 +1,7 @@
 package com.api.votingsession.controller;
 
 import com.api.votingsession.Repository.AgendaRepository;
+import com.api.votingsession.Utility.CustomException.MessageBusiness;
 import com.api.votingsession.Utility.ResponsePageable.CustomPage;
 import com.api.votingsession.application.service.AgendaService;
 import com.api.votingsession.domain.dto.AgendaCreateDto;
@@ -51,29 +52,29 @@ public class AgendaController {
 
     @GetMapping("/{id}")
     @ApiOperation(value = "Request agenda by ID", notes = "Search for a specific agenda")
-    public ResponseEntity<Object> getAgendaById(@PathVariable(value = "id") UUID id) {
+    public ResponseEntity<Optional<Agenda>> getAgendaById(@PathVariable(value = "id") UUID id) {
         Optional<Agenda> agenda = agendaRepository.findById(id);
         if (agenda.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE);
+            throw MessageBusiness.AGENDA_NOT_FOUND.createException();
         return ResponseEntity.status(HttpStatus.OK).body(agenda);
     }
 
     @PostMapping
     @ApiOperation(value = "Create new agenda", notes = "Create a new agenda to vote")
-    public ResponseEntity<Object> createNewAgenda(@RequestBody @Valid AgendaCreateDto agendaCreateDto) {
-        return agendaService.createNewAgenda(agendaCreateDto);
+    public ResponseEntity<Agenda> createNewAgenda(@RequestBody @Valid AgendaCreateDto agendaCreateDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(agendaService.createNewAgenda(agendaCreateDto));
     }
 
     @PutMapping("/{id}")
     @ApiOperation(value = "Update agenda by ID", notes = "Update a specific agenda")
-    public ResponseEntity<Object> updateAgendaById(@PathVariable(value = "id") UUID id, @RequestBody @Valid AgendaCreateDto agendaCreateDto) {
-        return agendaService.updateAgendaById(id, agendaCreateDto);
+    public ResponseEntity<Agenda> updateAgendaById(@PathVariable(value = "id") UUID id, @RequestBody @Valid AgendaCreateDto agendaCreateDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(agendaService.updateAgendaById(id, agendaCreateDto));
     }
 
     @DeleteMapping("/{id}")
     @ApiOperation(value = "Delete agenda by ID", notes = "Delete a specific agenda")
-    public ResponseEntity<Object> removeAgendaById(@PathVariable(value = "id") UUID id) {
-        return agendaService.removeAgendaById(id);
+    public ResponseEntity<String> removeAgendaById(@PathVariable(value = "id") UUID id) {
+        return ResponseEntity.status(HttpStatus.OK).body(agendaService.removeAgendaById(id));
     }
 
 

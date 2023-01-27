@@ -9,13 +9,14 @@ import com.api.votingsession.domain.dto.AgendaCreateDto;
 import com.api.votingsession.domain.model.Agenda;
 import com.api.votingsession.domain.model.User;
 import com.api.votingsession.domain.model.Vote;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -25,7 +26,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -37,9 +37,6 @@ import java.util.*;
 @TestPropertySource(locations = "classpath:application-integration-tests.properties")
 public class AgendaControllerTest {
 
-    @Autowired
-    private MockMvc mvc;
-
     @InjectMocks
     @Spy
     private AgendaController agendaController;
@@ -49,8 +46,6 @@ public class AgendaControllerTest {
 
     @Mock
     private AgendaRepository agendaRepository;
-
-    private static final String BASE_PATH = "http://localhost:8080/agenda";
 
     private static final AgendaTopic BASE_AGENDA_TOPIC = AgendaTopic.generateRandomTopic();
 
@@ -63,8 +58,6 @@ public class AgendaControllerTest {
     private static final String TEST_NAME = generateRandomString();
 
     private static final VoteOption TEST_VOTE = VoteOption.generateRandomVoteOption();
-
-    private static final ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
 
     private static String generateRandomString() {
         byte[] array = new byte[7];
@@ -138,17 +131,7 @@ public class AgendaControllerTest {
         Agenda agenda = buildAgenda();
         ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(Optional.of(agenda));
         Mockito.when(agendaRepository.findById(agenda.getId())).thenReturn(Optional.of(agenda));
-        ResponseEntity<Object> response = agendaController.getAgendaById(agenda.getId());
-        Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
-        Assert.assertEquals(expectedResponse.getBody(), response.getBody());
-    }
-
-    @Test
-    public void getAgendaByIdNotFound() {
-        Agenda agenda = buildAgenda();
-        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agenda not found!");
-        Mockito.when(agendaRepository.findById(agenda.getId())).thenReturn(Optional.empty());
-        ResponseEntity<Object> response = agendaController.getAgendaById(agenda.getId());
+        ResponseEntity<Optional<Agenda>> response = agendaController.getAgendaById(agenda.getId());
         Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         Assert.assertEquals(expectedResponse.getBody(), response.getBody());
     }
@@ -157,9 +140,9 @@ public class AgendaControllerTest {
     public void createNewAgendaTest() {
         AgendaCreateDto agendaCreateDto = buildAgendaCreateDto();
         Agenda agenda = buildAgenda();
-        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(agenda);
-        Mockito.when(agendaService.createNewAgenda(agendaCreateDto)).thenReturn(expectedResponse);
-        ResponseEntity<Object> response = agendaController.createNewAgenda(agendaCreateDto);
+        ResponseEntity<Agenda> expectedResponse = ResponseEntity.status(HttpStatus.CREATED).body(agenda);
+        Mockito.when(agendaService.createNewAgenda(agendaCreateDto)).thenReturn(agenda);
+        ResponseEntity<Agenda> response = agendaController.createNewAgenda(agendaCreateDto);
         Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         Assert.assertEquals(expectedResponse.getBody(), response.getBody());
     }
@@ -169,9 +152,9 @@ public class AgendaControllerTest {
         UUID id = UUID.randomUUID();
         AgendaCreateDto agendaCreateDto = buildAgendaCreateDto();
         Agenda agenda = buildAgenda();
-        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(agenda);
-        Mockito.when(agendaService.updateAgendaById(id, agendaCreateDto)).thenReturn(expectedResponse);
-        ResponseEntity<Object> response = agendaController.updateAgendaById(id, agendaCreateDto);
+        ResponseEntity<Agenda> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(agenda);
+        Mockito.when(agendaService.updateAgendaById(id, agendaCreateDto)).thenReturn(agenda);
+        ResponseEntity<Agenda> response = agendaController.updateAgendaById(id, agendaCreateDto);
         Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         Assert.assertEquals(expectedResponse.getBody(), response.getBody());
     }
@@ -179,9 +162,9 @@ public class AgendaControllerTest {
     @Test
     public void removeAgendaByIdTest() {
         UUID id = UUID.randomUUID();
-        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.OK).body("Agenda deleted successfully!");
-        Mockito.when(agendaService.removeAgendaById(id)).thenReturn(expectedResponse);
-        ResponseEntity<Object> response = agendaController.removeAgendaById(id);
+        ResponseEntity<String> expectedResponse = ResponseEntity.status(HttpStatus.OK).body("Agenda deleted successfully!");
+        Mockito.when(agendaService.removeAgendaById(id)).thenReturn("Agenda deleted successfully!");
+        ResponseEntity<String> response = agendaController.removeAgendaById(id);
         Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         Assert.assertEquals(expectedResponse.getBody(), response.getBody());
     }

@@ -1,18 +1,17 @@
 package com.api.votingsession.application.service;
 
+import com.api.votingsession.Repository.AgendaRepository;
 import com.api.votingsession.Repository.UserRepository;
-import com.api.votingsession.domain.dto.AgendaCreateDto;
 import com.api.votingsession.domain.Enum.AgendaTopic;
 import com.api.votingsession.domain.Enum.VoteOption;
+import com.api.votingsession.domain.dto.AgendaCreateDto;
 import com.api.votingsession.domain.model.Agenda;
 import com.api.votingsession.domain.model.User;
 import com.api.votingsession.domain.model.Vote;
-import com.api.votingsession.Repository.AgendaRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -34,8 +33,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.any;
-import static org.hamcrest.Matchers.empty;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -136,12 +133,6 @@ public class AgendaServiceTest {
     }
 
     @Test
-    @AfterEach
-    public void testCompleted() {
-        System.out.println("The test has been completed.");
-    }
-
-    @Test
     @DisplayName("Create agenda successfully.")
     public void createNewAgendaSuccessTest() {
         // arrange
@@ -149,14 +140,13 @@ public class AgendaServiceTest {
         User user = buildUser();
         user.setId(agendaCreateDto.getUserId());
         Agenda agenda = buildAgenda();
-        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.CREATED).body(agenda);
 
         // setting mock behavior
         Mockito.when(userRepository.findById(agendaCreateDto.getUserId())).thenReturn(Optional.of(user));
         Mockito.when(agendaRepository.save(ArgumentMatchers.any(Agenda.class))).thenReturn(agenda);
 
         // action
-        ResponseEntity<Object> response = agendaService.createNewAgenda(agendaCreateDto);
+        Agenda response = agendaService.createNewAgenda(agendaCreateDto);
 
         // assertions
         Mockito.verify(agendaRepository).save(agendaArgumentCaptor.capture());
@@ -164,18 +154,7 @@ public class AgendaServiceTest {
         Assertions.assertThat(agendaSaved.getVotes()).isNotNull();
         Assertions.assertThat(agendaSaved.getRegistrationDate()).isNotNull();
         Assertions.assertThat(agendaSaved.getVotingClosedDate()).isNotNull();
-        Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
-        Assert.assertEquals(expectedResponse.getBody(), response.getBody());
-    }
-
-    @Test
-    public void removeAgendaByIdTest() {
-        Agenda agenda = buildAgenda();
-        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.OK).body("Agenda deleted successfully!");
-        Mockito.when(agendaRepository.findById(agenda.getId())).thenReturn(Optional.of(agenda));
-        ResponseEntity<Object> response = agendaService.removeAgendaById(agenda.getId());
-        Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
-        Assert.assertEquals(expectedResponse.getBody(), response.getBody());
+        Assert.assertEquals(agenda, response);
     }
 
     @Test
@@ -183,14 +162,13 @@ public class AgendaServiceTest {
         // arrange
         AgendaCreateDto agendaCreateDto = buildAgendaCreateDto();
         Agenda agenda = buildAgenda();
-        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(agenda);
 
         // setup mock config
         Mockito.when(agendaRepository.findById(agenda.getId())).thenReturn(Optional.of(agenda));
         Mockito.when(agendaRepository.save(ArgumentMatchers.any(Agenda.class))).thenReturn(agenda);
 
         // action
-        ResponseEntity<Object> response = agendaService.updateAgendaById(agenda.getId(), agendaCreateDto);
+        Agenda response = agendaService.updateAgendaById(agenda.getId(), agendaCreateDto);
 
         // assertions
         Mockito.verify(agendaRepository).save(agendaArgumentCaptor.capture());
@@ -199,7 +177,15 @@ public class AgendaServiceTest {
         Assertions.assertThat(agendaSaved.getVotes()).isNotNull();
         Assertions.assertThat(agendaSaved.getRegistrationDate()).isNotNull();
         Assertions.assertThat(agendaSaved.getVotingClosedDate()).isNotNull();
-        Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
-        Assert.assertEquals(expectedResponse.getBody(), response.getBody());
+        Assert.assertEquals(agenda, response);
+    }
+
+    @Test
+    public void removeAgendaByIdTest() {
+        Agenda agenda = buildAgenda();
+        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.OK).body("Agenda deleted successfully!");
+        Mockito.when(agendaRepository.findById(agenda.getId())).thenReturn(Optional.of(agenda));
+        String response = agendaService.removeAgendaById(agenda.getId());
+        Assert.assertEquals(expectedResponse.getBody(), response);
     }
 }
