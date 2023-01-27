@@ -32,7 +32,7 @@ public class TopicController {
 
     @PostMapping
     @ApiOperation(value = "Create new topic", notes = "To create a new topic, it must be valid within the system", hidden = true)
-    public ResponseEntity<Object> createNewTopic(String topic) {
-        return topicService.createNewTopic(topic);
+    public ResponseEntity<Topic> createNewTopic(String topic) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(topicService.createNewTopic(topic));
     }
 }
