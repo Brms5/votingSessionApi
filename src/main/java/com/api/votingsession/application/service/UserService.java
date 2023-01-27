@@ -1,12 +1,11 @@
 package com.api.votingsession.application.service;
 
+import com.api.votingsession.Repository.UserRepository;
+import com.api.votingsession.Utility.CustomException.MessageBusiness;
 import com.api.votingsession.application.Interface.IUserService;
 import com.api.votingsession.domain.dto.UserCreateDto;
 import com.api.votingsession.domain.model.Agenda;
 import com.api.votingsession.domain.model.User;
-import com.api.votingsession.Repository.UserRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -33,18 +32,19 @@ public class UserService implements IUserService {
         return userRepository.save(user);
     }
 
-    public ResponseEntity<Object> getUserById(UUID id) {
-        Optional<User> userOptional = userRepository.findById(id);
-        return userOptional.<ResponseEntity<Object>>map(user -> ResponseEntity.status(HttpStatus.OK).body(user))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!"));
+    public Optional<User> getUserById(UUID id) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty())
+            throw MessageBusiness.USER_NOT_FOUND.createException();
+        return user;
     }
 
-    public ResponseEntity<Object> updateUserById(UUID id, UserCreateDto userCreateDto) {
-        Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
+    public User updateUserById(UUID id, UserCreateDto userCreateDto) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty())
+            throw MessageBusiness.USER_NOT_FOUND.createException();
 
-        User userUpdated = new User(userOptional.get().getId(), userCreateDto.getName(), userOptional.get().getAgenda());
-        return ResponseEntity.status(HttpStatus.OK).body(userRepository.save(userUpdated));
+        User userUpdated = new User(user.get().getId(), userCreateDto.getName(), user.get().getAgenda());
+        return userRepository.save(userUpdated);
     }
 }

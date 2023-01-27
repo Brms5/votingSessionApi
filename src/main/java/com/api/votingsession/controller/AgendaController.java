@@ -30,8 +30,6 @@ public class AgendaController {
 
     final AgendaRepository agendaRepository;
 
-    private static final String NOT_FOUND_MESSAGE = "Agenda not found!";
-
     public AgendaController(AgendaService agendaService, AgendaRepository agendaRepository) {
         this.agendaService = agendaService;
         this.agendaRepository = agendaRepository;
@@ -76,6 +74,5 @@ public class AgendaController {
     public ResponseEntity<String> removeAgendaById(@PathVariable(value = "id") UUID id) {
         return ResponseEntity.status(HttpStatus.OK).body(agendaService.removeAgendaById(id));
     }
-
 
 }

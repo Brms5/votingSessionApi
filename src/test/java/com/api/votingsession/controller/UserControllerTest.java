@@ -86,9 +86,9 @@ public class UserControllerTest {
     public void getUserByIdTest() {
         UUID userId = UUID.randomUUID();
         User user = buildUser();
-        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(user);
-        Mockito.when(userService.getUserById(userId)).thenReturn(expectedResponse);
-        ResponseEntity<Object> response = userController.getUserById(userId);
+        ResponseEntity<Optional<User>> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(Optional.of(user));
+        Mockito.when(userService.getUserById(userId)).thenReturn(Optional.of(user));
+        ResponseEntity<Optional<User>> response = userController.getUserById(userId);
         Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         Assert.assertEquals(expectedResponse.getBody(), response.getBody());
     }
@@ -99,8 +99,8 @@ public class UserControllerTest {
         UserCreateDto userCreateDto = buildUserCreateDto();
         User user = buildUser();
         ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(user);
-        Mockito.when(userService.updateUserById(userId, userCreateDto)).thenReturn(expectedResponse);
-        ResponseEntity<Object> response = userController.updateUserById(userId, userCreateDto);
+        Mockito.when(userService.updateUserById(userId, userCreateDto)).thenReturn(user);
+        ResponseEntity<User> response = userController.updateUserById(userId, userCreateDto);
         Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         Assert.assertEquals(expectedResponse.getBody(), response.getBody());
     }
