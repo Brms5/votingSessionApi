@@ -17,9 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import java.util.Optional;
 import java.util.UUID;
-
-
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -56,14 +55,14 @@ public class UserController {
 
     @GetMapping("/{id}")
     @ApiOperation(value = "Request user by ID", notes = "Search for a specific user")
-    public ResponseEntity<Object> getUserById(@PathVariable(value = "id") UUID id) {
-        return userService.getUserById(id);
+    public ResponseEntity<Optional<User>> getUserById(@PathVariable(value = "id") UUID id) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(id));
     }
 
     @PutMapping("/{id}")
     @ApiOperation(value = "Update user by ID", notes = "Update a specific user")
-    public ResponseEntity<Object> updateUserById(@PathVariable(value = "id") UUID id, @RequestBody @Valid UserCreateDto userCreateDto) {
-        return userService.updateUserById(id, userCreateDto);
+    public ResponseEntity<User> updateUserById(@PathVariable(value = "id") UUID id, @RequestBody @Valid UserCreateDto userCreateDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserById(id, userCreateDto));
     }
 
 }

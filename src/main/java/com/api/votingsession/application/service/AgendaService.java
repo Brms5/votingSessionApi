@@ -1,5 +1,6 @@
 package com.api.votingsession.application.service;
 
+import com.api.votingsession.Repository.AgendaRepository;
 import com.api.votingsession.Repository.UserRepository;
 import com.api.votingsession.Utility.CustomException.MessageBusiness;
 import com.api.votingsession.application.Interface.IAgendaService;
@@ -7,10 +8,7 @@ import com.api.votingsession.domain.dto.AgendaCreateDto;
 import com.api.votingsession.domain.model.Agenda;
 import com.api.votingsession.domain.model.User;
 import com.api.votingsession.domain.model.Vote;
-import com.api.votingsession.Repository.AgendaRepository;
 import org.springframework.beans.BeanUtils;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -29,7 +27,7 @@ public class AgendaService implements IAgendaService {
 
     final UserRepository userRepository;
 
-    private static final String NOT_FOUND_MESSAGE = "Agenda not found!";
+    private static final String AGENDA_DELETED = "Agenda deleted successfully!";
 
     public AgendaService(AgendaRepository agendaRepository, UserRepository userRepository) {
         this.agendaRepository = agendaRepository;
@@ -37,10 +35,10 @@ public class AgendaService implements IAgendaService {
     }
 
     @Transactional
-    public ResponseEntity<Object> createNewAgenda(AgendaCreateDto agendaCreateDto) {
+    public Agenda createNewAgenda(AgendaCreateDto agendaCreateDto) {
         Optional<User> user = userRepository.findById(agendaCreateDto.getUserId());
         if (user.isEmpty())
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(MessageBusiness.USER_NOT_FOUND.getMessage());
+            throw MessageBusiness.USER_NOT_FOUND.createException();
 
         var agenda = new Agenda();
         BeanUtils.copyProperties(agendaCreateDto, agenda);
@@ -53,26 +51,14 @@ public class AgendaService implements IAgendaService {
         agendaList.add(agenda);
         user.get().setAgenda(agendaList);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(agendaRepository.save(agenda));
+        return agendaRepository.save(agenda);
     }
 
     @Transactional
-    public ResponseEntity<Object> removeAgendaById(UUID id) {
+    public Agenda updateAgendaById(UUID id, AgendaCreateDto agendaCreateDto) {
         Optional<Agenda> agenda = agendaRepository.findById(id);
-
         if (agenda.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE);
-
-        agendaRepository.delete(agenda.get());
-        return ResponseEntity.status(HttpStatus.OK).body("Agenda deleted successfully!");
-    }
-
-    @Transactional
-    public ResponseEntity<Object> updateAgendaById(UUID id, AgendaCreateDto agendaCreateDto) {
-        Optional<Agenda> agenda = agendaRepository.findById(id);
-
-        if (agenda.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE);
+            throw MessageBusiness.AGENDA_NOT_FOUND.createException();
 
         var newAgenda = new Agenda();
         BeanUtils.copyProperties(agendaCreateDto, newAgenda);
@@ -82,6 +68,16 @@ public class AgendaService implements IAgendaService {
         newAgenda.setRegistrationDate(agenda.get().getRegistrationDate());
         newAgenda.setVotingClosedDate(agenda.get().getVotingClosedDate());
 
-        return ResponseEntity.status(HttpStatus.OK).body(agendaRepository.save(newAgenda));
+        return agendaRepository.save(newAgenda);
+    }
+
+    @Transactional
+    public String removeAgendaById(UUID id) {
+        Optional<Agenda> agenda = agendaRepository.findById(id);
+        if (agenda.isEmpty())
+            throw MessageBusiness.AGENDA_NOT_FOUND.createException();
+
+        agendaRepository.delete(agenda.get());
+        return AGENDA_DELETED;
     }
 }

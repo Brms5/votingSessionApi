@@ -23,15 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -131,23 +129,17 @@ public class VoteServiceTest {
     @Test
     public void getAllVotesByAgendaTest() {
         Agenda agenda = buildAgenda();
-        Integer randomNumber = new Random().nextInt((9) + 1);
         ResultVoteDto resultVoteDto = new ResultVoteDto();
-        resultVoteDto.setTitle(generateRandomString());
-        resultVoteDto.setVoteYes(randomNumber);
-        resultVoteDto.setVoteNo(randomNumber);
-        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(resultVoteDto);
 
         when(agendaRepository.findById(agenda.getId())).thenReturn(Optional.of(agenda));
 
-        ResponseEntity<ResultVoteDto> response = voteService.getAllVotesByAgenda(agenda.getId());
-        ResultVoteDto responseBody = response.getBody();
+        ResultVoteDto response = voteService.getAllVotesByAgenda(agenda.getId());
 
         Assertions.assertThat(agenda.getVotes()).isNotNull();
-        Assertions.assertThat(responseBody.getTitle()).isNotNull();
-        Assertions.assertThat(responseBody.getVoteYes()).isNotNull();
-        Assertions.assertThat(responseBody.getVoteNo()).isNotNull();
-        assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
+        Assertions.assertThat(response.getTitle()).isNotNull();
+        Assertions.assertThat(response.getVoteYes()).isNotNull();
+        Assertions.assertThat(response.getVoteNo()).isNotNull();
+        assertSame(response.getClass(), resultVoteDto.getClass());
     }
 
     @Test
@@ -155,12 +147,13 @@ public class VoteServiceTest {
         VoteCreateDto voteCreateDto = buildVoteCreateDto();
         Agenda agenda = buildAgenda();
         User user = buildUser();
-        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.CREATED).body("Vote created successfully!");
+        Vote vote = buildVote();
 
         when(agendaRepository.findById(voteCreateDto.getAgendaId())).thenReturn(Optional.of(agenda));
         when(userRepository.findById(voteCreateDto.getUserId())).thenReturn(Optional.of(user));
+        when(voteRepository.save(any(Vote.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        ResponseEntity<Object> response = voteService.createNewVote(voteCreateDto);
+        Vote response = voteService.createNewVote(voteCreateDto);
 
         Mockito.verify(voteRepository).save(voteArgumentCaptor.capture());
         Vote voteSaved = voteArgumentCaptor.getValue();
@@ -169,17 +162,14 @@ public class VoteServiceTest {
         Mockito.verify(agendaRepository).save(agendaArgumentCaptor.capture());
         Agenda agendaSaved = agendaArgumentCaptor.getValue();
         Assertions.assertThat(agendaSaved.getVotes()).isNotNull();
-        assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
-        assertEquals(expectedResponse.getBody(), response.getBody());
+        assertEquals(vote.getClass(), response.getClass());
     }
 
     @Test
     public void createNewVoteAgendaNotFoundTest() {
         VoteCreateDto voteCreateDto = buildVoteCreateDto();
-        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agenda not found!");
-        ResponseEntity<Object> response = voteService.createNewVote(voteCreateDto);
-        assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
-        assertEquals(expectedResponse.getBody(), response.getBody());
+        BusinessException exception = assertThrows(BusinessException.class, () -> voteService.createNewVote(voteCreateDto));
+        assertTrue(exception.getMessage().contentEquals("Agenda not found!"));
     }
 
     @Test
@@ -188,7 +178,7 @@ public class VoteServiceTest {
         Agenda agenda = buildAgenda();
         agenda.setVotingClosedDate(LocalDateTime.now());
         when(agendaRepository.findById(voteCreateDto.getAgendaId())).thenReturn(Optional.of(agenda));
-        BusinessException exception = org.junit.jupiter.api.Assertions.assertThrows(BusinessException.class, () -> voteService.createNewVote(voteCreateDto));
+        BusinessException exception = assertThrows(BusinessException.class, () -> voteService.createNewVote(voteCreateDto));
         assertTrue(exception.getMessage().contentEquals("Voting Session is closed!"));
     }
 
@@ -196,11 +186,9 @@ public class VoteServiceTest {
     public void createNewVoteUserNotFoundTest() {
         VoteCreateDto voteCreateDto = buildVoteCreateDto();
         Agenda agenda = buildAgenda();
-        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
         when(agendaRepository.findById(voteCreateDto.getAgendaId())).thenReturn(Optional.of(agenda));
-        ResponseEntity<Object> response = voteService.createNewVote(voteCreateDto);
-        assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
-        assertEquals(expectedResponse.getBody(), response.getBody());
+        BusinessException exception = assertThrows(BusinessException.class, () -> voteService.createNewVote(voteCreateDto));
+        assertTrue(exception.getMessage().contentEquals("User not found!"));
     }
 
     @Test
@@ -211,15 +199,13 @@ public class VoteServiceTest {
         agendaList.add(agenda);
         User user = buildUser();
         user.setAgenda(agendaList);
-        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The user cannot vote on the agenda he created.");
 
         when(agendaRepository.findById(voteCreateDto.getAgendaId())).thenReturn(Optional.of(agenda));
         when(userRepository.findById(voteCreateDto.getUserId())).thenReturn(Optional.of(user));
 
-        ResponseEntity<Object> response = voteService.createNewVote(voteCreateDto);
+        BusinessException exception = assertThrows(BusinessException.class, () -> voteService.createNewVote(voteCreateDto));
 
-        assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
-        assertEquals(expectedResponse.getBody(), response.getBody());
+        assertTrue(exception.getMessage().contentEquals("The user cannot vote on the agenda he created."));
     }
 
     @Test

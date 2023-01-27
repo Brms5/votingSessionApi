@@ -14,11 +14,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -77,10 +79,9 @@ public class UserServiceTest {
     @Test
     public void getUserById() {
         User user = buildUser();
-        HttpStatus expectedResponse = HttpStatus.OK;
         Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-        HttpStatus response = userService.getUserById(user.getId()).getStatusCode();
-        Assert.assertEquals(expectedResponse, response);
+        Optional<User> response = userService.getUserById(user.getId());
+        Assert.assertEquals(Optional.of(user), response);
     }
 
     @Test
@@ -88,15 +89,15 @@ public class UserServiceTest {
         // arrange
         UserCreateDto userCreateDto = buildUserCreateDto();
         User user = buildUser();
-        HttpStatus expectedResponse = HttpStatus.OK;
 
         // setting mock behavior
         Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.save(any(User.class))).thenReturn(user);
 
         // action
-        HttpStatus response = userService.updateUserById(user.getId(), userCreateDto).getStatusCode();
+        User response = userService.updateUserById(user.getId(), userCreateDto);
 
         // assertions
-        Assert.assertEquals(expectedResponse, response);
+        Assert.assertEquals(user, response);
     }
 }

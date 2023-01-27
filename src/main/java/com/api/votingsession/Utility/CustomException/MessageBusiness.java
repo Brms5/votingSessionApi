@@ -12,8 +12,8 @@ public enum MessageBusiness {
 
     USER_NOT_ALL_AVAILABLE(HttpStatus.BAD_REQUEST, "User Search couldn't be performed", "%s"),
     INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "MISSING_VALUE", "%s"),
-    AGENDA_NOT_FOUND(HttpStatus.NOT_FOUND, "Agenda not found", "%s"),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User {} not found", "%s"),
+    AGENDA_NOT_FOUND(HttpStatus.NOT_FOUND, "Agenda not found!", "The entered agenda was not found."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found!", "The entered user was not found."),
     USER_NOT_NEW(HttpStatus.BAD_REQUEST, "USER_NOT_NEW", "User %s has already logged in"),
     FIELD_REQUIRED(HttpStatus.BAD_REQUEST, "Request field missing", "%s"),
     OPERATION_FORBIDEN(HttpStatus.FORBIDDEN, "Operation not allowed", "Forbidden Access"),
@@ -29,7 +29,7 @@ public enum MessageBusiness {
     VOTING_SESSION_CLOSED(HttpStatus.BAD_REQUEST, "Voting Session is closed!", "The selected Agenda: %s has already been voted."),
     TOPIC_INVALID(HttpStatus.BAD_REQUEST, "The entered topic is not valid.", "%s"),
     ALREADY_VOTED(HttpStatus.BAD_REQUEST, "User already voted!", "%s"),
-    USER_CANNOT_VOTE(HttpStatus.BAD_REQUEST, "The user cannot vote on the agenda he created.", "%s");
+    USER_CANNOT_VOTE(HttpStatus.BAD_REQUEST, "The user cannot vote on the agenda he created.", "The user can vote only in agendas that other users created.");
 
     private final HttpStatus status;
     private final String message;
