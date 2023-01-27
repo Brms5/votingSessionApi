@@ -13,8 +13,6 @@ import com.api.votingsession.domain.model.Agenda;
 import com.api.votingsession.domain.model.User;
 import com.api.votingsession.domain.model.Vote;
 import org.springframework.beans.BeanUtils;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -31,15 +29,13 @@ public class VoteService implements IVoteService {
     final AgendaRepository agendaRepository;
     final UserRepository userRepository;
 
-    private static final String NOT_FOUND_MESSAGE = "Agenda not found!";
-
     public VoteService(VoteRepository voteRepository, AgendaRepository agendaRepository, UserRepository userRepository) {
         this.voteRepository = voteRepository;
         this.agendaRepository = agendaRepository;
         this.userRepository = userRepository;
     }
 
-    public ResponseEntity<ResultVoteDto> getAllVotesByAgenda(UUID id) {
+    public ResultVoteDto getAllVotesByAgenda(UUID id) {
         Optional<Agenda> agenda = agendaRepository.findById(id);
 
         if (agenda.isEmpty())
@@ -58,14 +54,14 @@ public class VoteService implements IVoteService {
             }
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(totalVotes);
+        return totalVotes;
     }
 
     @Transactional
-    public ResponseEntity<Object> createNewVote(VoteCreateDto voteCreateDto) throws BusinessException {
+    public Vote createNewVote(VoteCreateDto voteCreateDto) throws BusinessException {
         Optional<Agenda> agenda = agendaRepository.findById(voteCreateDto.getAgendaId());
         if (agenda.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(NOT_FOUND_MESSAGE);
+            throw MessageBusiness.AGENDA_NOT_FOUND.createException();
 
         var isVotingSessionClosed = agenda.get().getVotingClosedDate().isBefore(LocalDateTime.now(ZoneId.of("UTC")));
         if (isVotingSessionClosed)
@@ -73,13 +69,13 @@ public class VoteService implements IVoteService {
 
         Optional<User> user = userRepository.findById(voteCreateDto.getUserId());
         if (user.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
+            throw MessageBusiness.USER_NOT_FOUND.createException();
 
         if (!user.get().getAgenda().isEmpty()) {
             List<Agenda> agendaList = user.get().getAgenda();
             for ( Agenda eachAgenda : agendaList ) {
                 if (eachAgenda.getId().equals(agenda.get().getId()))
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(MessageBusiness.USER_CANNOT_VOTE.getMessage());
+                    throw MessageBusiness.USER_CANNOT_VOTE.createException();
 
             }
         }
@@ -97,14 +93,12 @@ public class VoteService implements IVoteService {
         vote.setUserName(user.get().getName());
         vote.setAgendaTitle(agenda.get().getTitle());
 
-        voteRepository.save(vote);
-
         var voteList = agenda.get().getVotes();
         voteList.add(vote);
 
         agenda.get().setVotes(voteList);
         agendaRepository.save(agenda.get());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Vote created successfully!");
+        return voteRepository.save(vote);
     }
 }

@@ -1,6 +1,5 @@
 package com.api.votingsession.controller;
 
-import com.api.votingsession.Repository.VoteRepository;
 import com.api.votingsession.application.service.VoteService;
 import com.api.votingsession.domain.Enum.AgendaTopic;
 import com.api.votingsession.domain.Enum.VoteOption;
@@ -40,9 +39,6 @@ public class VoteControllerTest {
 
     @Mock
     private VoteService voteService;
-
-    @Mock
-    private VoteRepository voteRepository;
 
     private static final AgendaTopic BASE_AGENDA_TOPIC = AgendaTopic.generateRandomTopic();
 
@@ -119,7 +115,7 @@ public class VoteControllerTest {
         resultVoteDto.setVoteYes(randomNumber);
         resultVoteDto.setVoteNo(randomNumber);
         ResponseEntity<ResultVoteDto> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(resultVoteDto);
-        Mockito.when(voteService.getAllVotesByAgenda(id)).thenReturn(expectedResponse);
+        Mockito.when(voteService.getAllVotesByAgenda(id)).thenReturn(resultVoteDto);
         ResponseEntity<ResultVoteDto> response = voteController.getAllVotesByAgenda(id);
         Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         Assert.assertEquals(expectedResponse.getBody(), response.getBody());
@@ -128,9 +124,10 @@ public class VoteControllerTest {
     @Test
     public void createNewVoteTest() {
         VoteCreateDto voteCreateDto = buildVoteCreateDto();
-        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.CREATED).body("Vote created successfully!");
-        Mockito.when(voteService.createNewVote(voteCreateDto)).thenReturn(expectedResponse);
-        ResponseEntity<Object> response = voteController.createNewVote(voteCreateDto);
+        Vote vote = buildVote();
+        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.CREATED).body(vote);
+        Mockito.when(voteService.createNewVote(voteCreateDto)).thenReturn(vote);
+        ResponseEntity<Vote> response = voteController.createNewVote(voteCreateDto);
         Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         Assert.assertEquals(expectedResponse.getBody(), response.getBody());
     }
