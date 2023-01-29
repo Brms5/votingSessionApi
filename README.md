@@ -4,6 +4,10 @@
 
 This project is a solution to voting session management. In cooperativism, each member has one vote and decisions are made in assemblies, by voting. From this, the project will be the solution to manage these voting sessions.
 
+### :clipboard: Documentation on Postman
+
+https://documenter.getpostman.com/view/16226878/2s935hQSez
+
 ## :heavy_check_mark: Features
 
 - Create a new agenda(developed);
@@ -28,7 +32,7 @@ The following technologies were used in the construction of the project:
 - Validation
 - PostgreSQL Driver
 
-## :floppy_disk: Database
+### :floppy_disk: Database
           
 ![image](https://user-images.githubusercontent.com/83079569/214729544-874e9896-10ce-4587-969f-9b4aac349c1d.png)
 
