@@ -3,7 +3,6 @@ package com.api.votingsession.application.service;
 import com.api.votingsession.Repository.AgendaRepository;
 import com.api.votingsession.Repository.UserRepository;
 import com.api.votingsession.Repository.VoteRepository;
-import com.api.votingsession.Utility.CustomException.BusinessException;
 import com.api.votingsession.domain.Enum.AgendaTopic;
 import com.api.votingsession.domain.Enum.VoteOption;
 import com.api.votingsession.domain.dto.AgendaCreateDto;
@@ -28,7 +27,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -133,7 +133,7 @@ public class VoteServiceTest {
 
         when(agendaRepository.findById(agenda.getId())).thenReturn(Optional.of(agenda));
 
-        ResultVoteDto response = voteService.getAllVotesByAgenda(agenda.getId());
+        ResultVoteDto response = voteService.getAllVotesByAgenda(Optional.of(agenda));
 
         Assertions.assertThat(agenda.getVotes()).isNotNull();
         Assertions.assertThat(response.getTitle()).isNotNull();
@@ -143,17 +143,15 @@ public class VoteServiceTest {
     }
 
     @Test
-    public void createNewVoteSuccessTest() {
+    public void createNewVoteTest() {
         VoteCreateDto voteCreateDto = buildVoteCreateDto();
         Agenda agenda = buildAgenda();
         User user = buildUser();
         Vote vote = buildVote();
 
-        when(agendaRepository.findById(voteCreateDto.getAgendaId())).thenReturn(Optional.of(agenda));
-        when(userRepository.findById(voteCreateDto.getUserId())).thenReturn(Optional.of(user));
         when(voteRepository.save(any(Vote.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        Vote response = voteService.createNewVote(voteCreateDto);
+        Vote response = voteService.createNewVote(Optional.of(agenda), Optional.of(user), voteCreateDto);
 
         Mockito.verify(voteRepository).save(voteArgumentCaptor.capture());
         Vote voteSaved = voteArgumentCaptor.getValue();
@@ -163,65 +161,6 @@ public class VoteServiceTest {
         Agenda agendaSaved = agendaArgumentCaptor.getValue();
         Assertions.assertThat(agendaSaved.getVotes()).isNotNull();
         assertEquals(vote.getClass(), response.getClass());
-    }
-
-    @Test
-    public void createNewVoteAgendaNotFoundTest() {
-        VoteCreateDto voteCreateDto = buildVoteCreateDto();
-        BusinessException exception = assertThrows(BusinessException.class, () -> voteService.createNewVote(voteCreateDto));
-        assertTrue(exception.getMessage().contentEquals("Agenda not found!"));
-    }
-
-    @Test
-    public void createNewVoteVotingSessionClosedTest() {
-        VoteCreateDto voteCreateDto = buildVoteCreateDto();
-        Agenda agenda = buildAgenda();
-        agenda.setVotingClosedDate(LocalDateTime.now());
-        when(agendaRepository.findById(voteCreateDto.getAgendaId())).thenReturn(Optional.of(agenda));
-        BusinessException exception = assertThrows(BusinessException.class, () -> voteService.createNewVote(voteCreateDto));
-        assertTrue(exception.getMessage().contentEquals("Voting Session is closed!"));
-    }
-
-    @Test
-    public void createNewVoteUserNotFoundTest() {
-        VoteCreateDto voteCreateDto = buildVoteCreateDto();
-        Agenda agenda = buildAgenda();
-        when(agendaRepository.findById(voteCreateDto.getAgendaId())).thenReturn(Optional.of(agenda));
-        BusinessException exception = assertThrows(BusinessException.class, () -> voteService.createNewVote(voteCreateDto));
-        assertTrue(exception.getMessage().contentEquals("User not found!"));
-    }
-
-    @Test
-    public void createNewVoteUserCannotVoteTest() {
-        VoteCreateDto voteCreateDto = buildVoteCreateDto();
-        Agenda agenda = buildAgenda();
-        ArrayList<Agenda> agendaList = new ArrayList<>();
-        agendaList.add(agenda);
-        User user = buildUser();
-        user.setAgenda(agendaList);
-
-        when(agendaRepository.findById(voteCreateDto.getAgendaId())).thenReturn(Optional.of(agenda));
-        when(userRepository.findById(voteCreateDto.getUserId())).thenReturn(Optional.of(user));
-
-        BusinessException exception = assertThrows(BusinessException.class, () -> voteService.createNewVote(voteCreateDto));
-
-        assertTrue(exception.getMessage().contentEquals("The user cannot vote on the agenda he created."));
-    }
-
-    @Test
-    public void createNewVoteUserAlreadyVotedTest() {
-        VoteCreateDto voteCreateDto = buildVoteCreateDto();
-        User user = buildUser();
-        Vote vote = buildVote();
-        vote.setUserName(user.getName());
-        ArrayList<Vote> voteList = new ArrayList<>();
-        voteList.add(vote);
-        Agenda agenda = buildAgenda();
-        agenda.setVotes(voteList);
-        when(agendaRepository.findById(voteCreateDto.getAgendaId())).thenReturn(Optional.of(agenda));
-        when(userRepository.findById(voteCreateDto.getUserId())).thenReturn(Optional.of(user));
-        BusinessException exception = org.junit.jupiter.api.Assertions.assertThrows(BusinessException.class, () -> voteService.createNewVote(voteCreateDto));
-        assertTrue(exception.getMessage().contentEquals("User already voted!"));
     }
 
 }

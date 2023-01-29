@@ -2,7 +2,6 @@ package com.api.votingsession.application.service;
 
 import com.api.votingsession.Repository.AgendaRepository;
 import com.api.votingsession.Repository.UserRepository;
-import com.api.votingsession.Utility.CustomException.MessageBusiness;
 import com.api.votingsession.application.Interface.IAgendaService;
 import com.api.votingsession.domain.dto.AgendaCreateDto;
 import com.api.votingsession.domain.model.Agenda;
@@ -17,7 +16,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -33,12 +31,8 @@ public class AgendaService implements IAgendaService {
     }
 
     @Transactional
-    public Agenda createNewAgenda(AgendaCreateDto agendaCreateDto) {
-        Optional<User> user = userRepository.findById(agendaCreateDto.getUserId());
-        if (user.isEmpty())
-            throw MessageBusiness.USER_NOT_FOUND.createException();
-
-        var agenda = new Agenda();
+    public Agenda createNewAgenda(AgendaCreateDto agendaCreateDto, Optional<User> user) {
+        Agenda agenda = new Agenda();
         BeanUtils.copyProperties(agendaCreateDto, agenda);
         agenda.setUsername(user.get().getName());
         ArrayList<Vote> voteList = new ArrayList<>();
@@ -54,11 +48,7 @@ public class AgendaService implements IAgendaService {
     }
 
     @Transactional
-    public Agenda updateAgendaById(UUID id, AgendaCreateDto agendaCreateDto) {
-        Optional<Agenda> agenda = agendaRepository.findById(id);
-        if (agenda.isEmpty())
-            throw MessageBusiness.AGENDA_NOT_FOUND.createException();
-
+    public Agenda updateAgendaById(AgendaCreateDto agendaCreateDto, Optional<Agenda> agenda) {
         var newAgenda = new Agenda();
         BeanUtils.copyProperties(agendaCreateDto, newAgenda);
 

@@ -37,6 +37,10 @@ public enum MessageBusiness {
                 .description(this.formatDescription(args)).build();
     }
 
+    public BusinessException createExceptionTest() {
+        return BusinessException.builder().httpStatusCode(status).message(message).description(description).build();
+    }
+
     public String formatDescription(Object... params) {
         return String.format(this.description, params);
     }

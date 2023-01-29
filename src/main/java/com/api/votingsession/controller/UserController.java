@@ -1,6 +1,7 @@
 package com.api.votingsession.controller;
 
 import com.api.votingsession.Repository.UserRepository;
+import com.api.votingsession.Utility.CustomException.MessageBusiness;
 import com.api.votingsession.Utility.ResponsePageable.CustomPage;
 import com.api.votingsession.application.service.UserService;
 import com.api.votingsession.domain.dto.UserCreateDto;
@@ -55,14 +56,20 @@ public class UserController {
 
     @GetMapping("/{id}")
     @ApiOperation(value = "Request user by ID", notes = "Search for a specific user")
-    public ResponseEntity<Optional<User>> getUserById(@PathVariable(value = "id") UUID id) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(id));
+    public ResponseEntity<Object> getUserById(@PathVariable(value = "id") UUID id) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty())
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(MessageBusiness.USER_NOT_FOUND.getMessage());
+        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
     @PutMapping("/{id}")
     @ApiOperation(value = "Update user by ID", notes = "Update a specific user")
-    public ResponseEntity<User> updateUserById(@PathVariable(value = "id") UUID id, @RequestBody @Valid UserCreateDto userCreateDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserById(id, userCreateDto));
+    public ResponseEntity<Object> updateUserById(@PathVariable(value = "id") UUID id, @RequestBody @Valid UserCreateDto userCreateDto) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty())
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(MessageBusiness.USER_NOT_FOUND.getMessage());
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserById(userCreateDto, user));
     }
 
 }

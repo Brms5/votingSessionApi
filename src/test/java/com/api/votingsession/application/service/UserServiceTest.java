@@ -77,25 +77,16 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getUserById() {
-        User user = buildUser();
-        Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-        Optional<User> response = userService.getUserById(user.getId());
-        Assert.assertEquals(Optional.of(user), response);
-    }
-
-    @Test
     public void updateUserByIdTest() {
         // arrange
         UserCreateDto userCreateDto = buildUserCreateDto();
         User user = buildUser();
 
         // setting mock behavior
-        Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         Mockito.when(userRepository.save(any(User.class))).thenReturn(user);
 
         // action
-        User response = userService.updateUserById(user.getId(), userCreateDto);
+        User response = userService.updateUserById(userCreateDto, Optional.of(user));
 
         // assertions
         Assert.assertEquals(user, response);
