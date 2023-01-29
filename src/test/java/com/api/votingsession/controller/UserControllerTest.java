@@ -83,24 +83,41 @@ public class UserControllerTest {
     }
 
     @Test
-    public void getUserByIdTest() {
-        UUID userId = UUID.randomUUID();
+    public void getUserByIdSuccessTest() {
         User user = buildUser();
-        ResponseEntity<Optional<User>> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(Optional.of(user));
-        Mockito.when(userService.getUserById(userId)).thenReturn(Optional.of(user));
-        ResponseEntity<Optional<User>> response = userController.getUserById(userId);
+        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(Optional.of(user));
+        Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        ResponseEntity<Object> response = userController.getUserById(user.getId());
         Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         Assert.assertEquals(expectedResponse.getBody(), response.getBody());
     }
 
     @Test
-    public void updateUserByIdTest() {
-        UUID userId = UUID.randomUUID();
+    public void getUserByIdNotFoundTest() {
+        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
+        ResponseEntity<Object> response = userController.getUserById(UUID.randomUUID());
+        Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
+        Assert.assertEquals(expectedResponse.getBody(), response.getBody());
+    }
+
+    @Test
+    public void updateUserByIdSuccessTest() {
         UserCreateDto userCreateDto = buildUserCreateDto();
         User user = buildUser();
         ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(user);
-        Mockito.when(userService.updateUserById(userId, userCreateDto)).thenReturn(user);
-        ResponseEntity<User> response = userController.updateUserById(userId, userCreateDto);
+        Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        Mockito.when(userService.updateUserById(userCreateDto, Optional.of(user))).thenReturn(user);
+        ResponseEntity<Object> response = userController.updateUserById(user.getId(), userCreateDto);
+        Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
+        Assert.assertEquals(expectedResponse.getBody(), response.getBody());
+    }
+
+    @Test
+    public void updateUserByIdNotFoundTest() {
+        UserCreateDto userCreateDto = buildUserCreateDto();
+        User user = buildUser();
+        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
+        ResponseEntity<Object> response = userController.updateUserById(user.getId(), userCreateDto);
         Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         Assert.assertEquals(expectedResponse.getBody(), response.getBody());
     }
