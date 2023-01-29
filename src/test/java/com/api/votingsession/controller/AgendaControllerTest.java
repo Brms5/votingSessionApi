@@ -1,6 +1,7 @@
 package com.api.votingsession.controller;
 
 import com.api.votingsession.Repository.AgendaRepository;
+import com.api.votingsession.Repository.UserRepository;
 import com.api.votingsession.Utility.ResponsePageable.CustomPage;
 import com.api.votingsession.application.service.AgendaService;
 import com.api.votingsession.domain.Enum.AgendaTopic;
@@ -46,6 +47,9 @@ public class AgendaControllerTest {
 
     @Mock
     private AgendaRepository agendaRepository;
+
+    @Mock
+    private UserRepository userRepository;
 
     private static final AgendaTopic BASE_AGENDA_TOPIC = AgendaTopic.generateRandomTopic();
 
@@ -127,34 +131,63 @@ public class AgendaControllerTest {
     }
 
     @Test
-    public void getAgendaByIdSuccess() {
+    public void getAgendaByIdSuccessTest() {
         Agenda agenda = buildAgenda();
         ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(Optional.of(agenda));
         Mockito.when(agendaRepository.findById(agenda.getId())).thenReturn(Optional.of(agenda));
-        ResponseEntity<Optional<Agenda>> response = agendaController.getAgendaById(agenda.getId());
+        ResponseEntity<Object> response = agendaController.getAgendaById(agenda.getId());
         Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         Assert.assertEquals(expectedResponse.getBody(), response.getBody());
     }
 
     @Test
-    public void createNewAgendaTest() {
+    public void getAgendaByIdNotFoundTest() {
+        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agenda not found!");
+        ResponseEntity<Object> response = agendaController.getAgendaById(UUID.randomUUID());
+        Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
+        Assert.assertEquals(expectedResponse.getBody(), response.getBody());
+    }
+
+    @Test
+    public void createNewAgendaSuccessTest() {
         AgendaCreateDto agendaCreateDto = buildAgendaCreateDto();
         Agenda agenda = buildAgenda();
-        ResponseEntity<Agenda> expectedResponse = ResponseEntity.status(HttpStatus.CREATED).body(agenda);
-        Mockito.when(agendaService.createNewAgenda(agendaCreateDto)).thenReturn(agenda);
-        ResponseEntity<Agenda> response = agendaController.createNewAgenda(agendaCreateDto);
+        User user = buildUser();
+        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.CREATED).body(agenda);
+        Mockito.when(userRepository.findById(agendaCreateDto.getUserId())).thenReturn(Optional.of(user));
+        Mockito.when(agendaService.createNewAgenda(agendaCreateDto, Optional.of(user))).thenReturn(agenda);
+        ResponseEntity<Object> response = agendaController.createNewAgenda(agendaCreateDto);
         Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         Assert.assertEquals(expectedResponse.getBody(), response.getBody());
     }
 
     @Test
-    public void updateAgendaByIdTest() {
-        UUID id = UUID.randomUUID();
+    public void createNewAgendaUserNotFoundTest() {
+        AgendaCreateDto agendaCreateDto = buildAgendaCreateDto();
+        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
+        ResponseEntity<Object> response = agendaController.createNewAgenda(agendaCreateDto);
+        Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
+        Assert.assertEquals(expectedResponse.getBody(), response.getBody());
+    }
+
+    @Test
+    public void updateAgendaByIdSuccessTest() {
         AgendaCreateDto agendaCreateDto = buildAgendaCreateDto();
         Agenda agenda = buildAgenda();
         ResponseEntity<Agenda> expectedResponse = ResponseEntity.status(HttpStatus.OK).body(agenda);
-        Mockito.when(agendaService.updateAgendaById(id, agendaCreateDto)).thenReturn(agenda);
-        ResponseEntity<Agenda> response = agendaController.updateAgendaById(id, agendaCreateDto);
+        Mockito.when(agendaRepository.findById(agenda.getId())).thenReturn(Optional.of(agenda));
+        Mockito.when(agendaService.updateAgendaById(agendaCreateDto, Optional.of(agenda))).thenReturn(agenda);
+        ResponseEntity<Object> response = agendaController.updateAgendaById(agenda.getId(), agendaCreateDto);
+        Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
+        Assert.assertEquals(expectedResponse.getBody(), response.getBody());
+    }
+
+    @Test
+    public void updateAgendaByIdAgendaNotFoundTest() {
+        UUID id = UUID.randomUUID();
+        AgendaCreateDto agendaCreateDto = buildAgendaCreateDto();
+        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.NOT_FOUND).body("Agenda not found!");
+        ResponseEntity<Object> response = agendaController.updateAgendaById(id, agendaCreateDto);
         Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         Assert.assertEquals(expectedResponse.getBody(), response.getBody());
     }

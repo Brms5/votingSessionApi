@@ -140,11 +140,10 @@ public class AgendaServiceTest {
         Agenda agenda = buildAgenda();
 
         // setting mock behavior
-        Mockito.when(userRepository.findById(agendaCreateDto.getUserId())).thenReturn(Optional.of(user));
         Mockito.when(agendaRepository.save(ArgumentMatchers.any(Agenda.class))).thenReturn(agenda);
 
         // action
-        Agenda response = agendaService.createNewAgenda(agendaCreateDto);
+        Agenda response = agendaService.createNewAgenda(agendaCreateDto, Optional.of(user));
 
         // assertions
         Mockito.verify(agendaRepository).save(agendaArgumentCaptor.capture());
@@ -162,11 +161,10 @@ public class AgendaServiceTest {
         Agenda agenda = buildAgenda();
 
         // setup mock config
-        Mockito.when(agendaRepository.findById(agenda.getId())).thenReturn(Optional.of(agenda));
         Mockito.when(agendaRepository.save(ArgumentMatchers.any(Agenda.class))).thenReturn(agenda);
 
         // action
-        Agenda response = agendaService.updateAgendaById(agenda.getId(), agendaCreateDto);
+        Agenda response = agendaService.updateAgendaById(agendaCreateDto, Optional.of(agenda));
 
         // assertions
         Mockito.verify(agendaRepository).save(agendaArgumentCaptor.capture());

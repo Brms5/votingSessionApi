@@ -1,11 +1,13 @@
 package com.api.votingsession.controller;
 
 import com.api.votingsession.Repository.AgendaRepository;
+import com.api.votingsession.Repository.UserRepository;
 import com.api.votingsession.Utility.CustomException.MessageBusiness;
 import com.api.votingsession.Utility.ResponsePageable.CustomPage;
 import com.api.votingsession.application.service.AgendaService;
 import com.api.votingsession.domain.dto.AgendaCreateDto;
 import com.api.votingsession.domain.model.Agenda;
+import com.api.votingsession.domain.model.User;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -30,9 +32,12 @@ public class AgendaController {
 
     final AgendaRepository agendaRepository;
 
-    public AgendaController(AgendaService agendaService, AgendaRepository agendaRepository) {
+    final UserRepository userRepository;
+
+    public AgendaController(AgendaService agendaService, AgendaRepository agendaRepository, UserRepository userRepository) {
         this.agendaService = agendaService;
         this.agendaRepository = agendaRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
@@ -50,23 +55,29 @@ public class AgendaController {
 
     @GetMapping("/{id}")
     @ApiOperation(value = "Request agenda by ID", notes = "Search for a specific agenda")
-    public ResponseEntity<Optional<Agenda>> getAgendaById(@PathVariable(value = "id") UUID id) {
+    public ResponseEntity<Object> getAgendaById(@PathVariable(value = "id") UUID id) {
         Optional<Agenda> agenda = agendaRepository.findById(id);
         if (agenda.isEmpty())
-            throw MessageBusiness.AGENDA_NOT_FOUND.createException();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(MessageBusiness.AGENDA_NOT_FOUND.getMessage());
         return ResponseEntity.status(HttpStatus.OK).body(agenda);
     }
 
     @PostMapping
     @ApiOperation(value = "Create new agenda", notes = "Create a new agenda to vote")
-    public ResponseEntity<Agenda> createNewAgenda(@RequestBody @Valid AgendaCreateDto agendaCreateDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(agendaService.createNewAgenda(agendaCreateDto));
+    public ResponseEntity<Object> createNewAgenda(@RequestBody @Valid AgendaCreateDto agendaCreateDto) {
+        Optional<User> user = userRepository.findById(agendaCreateDto.getUserId());
+        if (user.isEmpty())
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(MessageBusiness.USER_NOT_FOUND.getMessage());
+        return ResponseEntity.status(HttpStatus.CREATED).body(agendaService.createNewAgenda(agendaCreateDto, user));
     }
 
     @PutMapping("/{id}")
     @ApiOperation(value = "Update agenda by ID", notes = "Update a specific agenda")
-    public ResponseEntity<Agenda> updateAgendaById(@PathVariable(value = "id") UUID id, @RequestBody @Valid AgendaCreateDto agendaCreateDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(agendaService.updateAgendaById(id, agendaCreateDto));
+    public ResponseEntity<Object> updateAgendaById(@PathVariable(value = "id") UUID id, @RequestBody @Valid AgendaCreateDto agendaCreateDto) {
+        Optional<Agenda> agenda = agendaRepository.findById(id);
+        if (agenda.isEmpty())
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(MessageBusiness.AGENDA_NOT_FOUND.getMessage());
+        return ResponseEntity.status(HttpStatus.OK).body(agendaService.updateAgendaById(agendaCreateDto, agenda));
     }
 
 }
