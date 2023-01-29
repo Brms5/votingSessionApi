@@ -4,6 +4,8 @@ import com.api.votingsession.domain.Enum.AgendaTopic;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serial;
@@ -24,6 +26,7 @@ public class Agenda implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column
     private UUID id;
 
     @Enumerated(EnumType.STRING)
@@ -36,7 +39,11 @@ public class Agenda implements Serializable {
     @Column(nullable = false, unique = true, length = 999)
     private String description;
 
-    @OneToMany
+    @Column(nullable = false)
+    private String username;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @Fetch(FetchMode.JOIN)
     @Column
     private List<Vote> votes = new ArrayList<>();
 
@@ -45,6 +52,14 @@ public class Agenda implements Serializable {
 
     @Column(nullable = false)
     private LocalDateTime votingClosedDate;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public Agenda() {}
 

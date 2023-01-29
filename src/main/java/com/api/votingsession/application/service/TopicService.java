@@ -23,18 +23,23 @@ public class TopicService implements ITopicService {
     @Transactional
     public Topic createNewTopic(String topic) {
         List<Topic> topicList = topicRepository.findAll();
-        for ( Topic topic1 : topicList ) {
-            if (topic1.getTopic().equals(topic))
-                throw MessageBusiness.TOPIC_INVALID.createException();
+        if (!topicList.isEmpty()) {
+            for (Topic topic1 : topicList) {
+                if (topic1.getTopic().equals(topic))
+                    throw MessageBusiness.TOPIC_INVALID.createException();
+            }
         }
 
         Topic newTopic = new Topic();
-        for ( AgendaTopic enumTopic : AgendaTopic.values() ) {
+        for (AgendaTopic enumTopic : AgendaTopic.values()) {
             if (topic.equals(enumTopic.toString())) {
                 newTopic.setTopic(topic);
                 topicRepository.save(newTopic);
             }
         }
+
+        if (newTopic.getTopic() == null)
+            throw MessageBusiness.TOPIC_INVALID.createException();
 
         return newTopic;
     }

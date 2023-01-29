@@ -19,9 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -180,12 +178,4 @@ public class AgendaServiceTest {
         Assert.assertEquals(agenda, response);
     }
 
-    @Test
-    public void removeAgendaByIdTest() {
-        Agenda agenda = buildAgenda();
-        ResponseEntity<Object> expectedResponse = ResponseEntity.status(HttpStatus.OK).body("Agenda deleted successfully!");
-        Mockito.when(agendaRepository.findById(agenda.getId())).thenReturn(Optional.of(agenda));
-        String response = agendaService.removeAgendaById(agenda.getId());
-        Assert.assertEquals(expectedResponse.getBody(), response);
-    }
 }

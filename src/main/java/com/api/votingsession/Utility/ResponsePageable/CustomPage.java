@@ -17,6 +17,7 @@ public class CustomPage<T> {
     }
 
     @Data
+    static
     class CustomPageable {
         int pageNumber;
         int pageSize;
