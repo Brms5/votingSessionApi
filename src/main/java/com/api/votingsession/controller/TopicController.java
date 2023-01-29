@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
+@ControllerAdvice
 @RequestMapping("/topic")
 public class TopicController {
 
@@ -31,7 +32,7 @@ public class TopicController {
     }
 
     @PostMapping
-    @ApiOperation(value = "Create new topic", notes = "To create a new topic, it must be valid within the system", hidden = true)
+    @ApiOperation(value = "Create new topic", notes = "To create a new topic, it must be valid within the system", hidden = false)
     public ResponseEntity<Topic> createNewTopic(String topic) {
         return ResponseEntity.status(HttpStatus.CREATED).body(topicService.createNewTopic(topic));
     }

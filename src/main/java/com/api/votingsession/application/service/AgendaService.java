@@ -27,8 +27,6 @@ public class AgendaService implements IAgendaService {
 
     final UserRepository userRepository;
 
-    private static final String AGENDA_DELETED = "Agenda deleted successfully!";
-
     public AgendaService(AgendaRepository agendaRepository, UserRepository userRepository) {
         this.agendaRepository = agendaRepository;
         this.userRepository = userRepository;
@@ -42,6 +40,7 @@ public class AgendaService implements IAgendaService {
 
         var agenda = new Agenda();
         BeanUtils.copyProperties(agendaCreateDto, agenda);
+        agenda.setUsername(user.get().getName());
         ArrayList<Vote> voteList = new ArrayList<>();
         agenda.setVotes(voteList);
         agenda.setRegistrationDate(LocalDateTime.now(ZoneId.of("UTC")));
@@ -65,19 +64,11 @@ public class AgendaService implements IAgendaService {
 
         newAgenda.setId(agenda.get().getId());
         newAgenda.setVotes(agenda.get().getVotes());
+        newAgenda.setUsername(agenda.get().getUsername());
         newAgenda.setRegistrationDate(agenda.get().getRegistrationDate());
         newAgenda.setVotingClosedDate(agenda.get().getVotingClosedDate());
 
         return agendaRepository.save(newAgenda);
     }
 
-    @Transactional
-    public String removeAgendaById(UUID id) {
-        Optional<Agenda> agenda = agendaRepository.findById(id);
-        if (agenda.isEmpty())
-            throw MessageBusiness.AGENDA_NOT_FOUND.createException();
-
-        agendaRepository.delete(agenda.get());
-        return AGENDA_DELETED;
-    }
 }

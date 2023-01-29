@@ -69,10 +69,4 @@ public class AgendaController {
         return ResponseEntity.status(HttpStatus.OK).body(agendaService.updateAgendaById(id, agendaCreateDto));
     }
 
-    @DeleteMapping("/{id}")
-    @ApiOperation(value = "Delete agenda by ID", notes = "Delete a specific agenda")
-    public ResponseEntity<String> removeAgendaById(@PathVariable(value = "id") UUID id) {
-        return ResponseEntity.status(HttpStatus.OK).body(agendaService.removeAgendaById(id));
-    }
-
 }

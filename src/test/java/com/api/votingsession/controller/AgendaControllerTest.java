@@ -159,14 +159,4 @@ public class AgendaControllerTest {
         Assert.assertEquals(expectedResponse.getBody(), response.getBody());
     }
 
-    @Test
-    public void removeAgendaByIdTest() {
-        UUID id = UUID.randomUUID();
-        ResponseEntity<String> expectedResponse = ResponseEntity.status(HttpStatus.OK).body("Agenda deleted successfully!");
-        Mockito.when(agendaService.removeAgendaById(id)).thenReturn("Agenda deleted successfully!");
-        ResponseEntity<String> response = agendaController.removeAgendaById(id);
-        Assert.assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
-        Assert.assertEquals(expectedResponse.getBody(), response.getBody());
-    }
-
 }

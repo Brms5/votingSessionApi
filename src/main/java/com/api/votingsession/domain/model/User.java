@@ -1,10 +1,11 @@
 package com.api.votingsession.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micrometer.core.lang.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -22,10 +23,14 @@ public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column
     private UUID id;
+
     @Column(nullable = false)
     private String name;
-    @OneToMany
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @Fetch(FetchMode.JOIN)
     @Nullable
     @Column
     private List<Agenda> agenda = new ArrayList<>();
@@ -54,3 +59,5 @@ public class User implements Serializable {
         this.name = name;
     }
 }
+
+
