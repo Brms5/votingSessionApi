@@ -22,6 +22,7 @@ The following technologies were used in the construction of the project:
 - Java
 - Spring Boot
 - JUnit
+- Mockito
 - PostgreSQL
 - Swagger
 
